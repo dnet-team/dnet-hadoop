@@ -1,0 +1,953 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>eu.dnetlib.dhp</groupId>
+	<artifactId>dhp</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
+	<packaging>pom</packaging>
+
+	<url>http://www.d-net.research-infrastructures.eu</url>
+
+	<licenses>
+		<license>
+			<name>The Apache Software License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+			<comments>A business-friendly OSS license</comments>
+		</license>
+	</licenses>
+
+	<modules>
+		<module>dhp-build</module>
+		<module>dhp-common</module>
+		<module>dhp-schemas</module>
+		<module>dhp-wf</module>
+	</modules>
+
+	<issueManagement>
+		<system>Redmine</system>
+		<url>https://issue.openaire.research-infrastructures.eu/projects/openaire</url>
+	</issueManagement>
+
+	<ciManagement>
+		<system>jenkins</system>
+		<url>https://jenkins-dnet.d4science.org/</url>
+	</ciManagement>
+
+	<scm>
+		<connection>scm:git:ssh://git@github.com/???</connection>
+		<developerConnection>scm:git:ssh://git@github.com/???.git</developerConnection>
+		<url>https://github.com/???</url>
+		<tag>HEAD</tag>
+	</scm>
+
+	<pluginRepositories>
+	</pluginRepositories>
+
+	<repositories>
+
+		<repository>
+			<id>dnet45-releases</id>
+			<name>D-Net 45 releases</name>
+			<url>http://maven.research-infrastructures.eu/nexus/content/repositories/dnet45-releases</url>
+			<layout>default</layout>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+		</repository>
+		<repository>
+			<id>dnet45-bootstrap-release</id>
+			<name>dnet45 bootstrap release</name>
+			<url>http://maven.research-infrastructures.eu/nexus/content/repositories/dnet45-bootstrap-release</url>
+			<layout>default</layout>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+		</repository>
+
+		<repository>
+			<id>cloudera</id>
+			<name>Cloudera Repository</name>
+			<url>https://repository.cloudera.com/artifactory/cloudera-repos</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+
+	</repositories>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.7.22</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>1.7.22</version>
+		</dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.17</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>3.1.0</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.12</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.hamcrest</groupId>
+			<artifactId>hamcrest-all</artifactId>
+			<version>1.3</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-all</artifactId>
+			<version>1.10.19</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-core</artifactId>
+			<version>1.6.6</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.google.code.findbugs</groupId>
+			<artifactId>annotations</artifactId>
+			<version>3.0.1</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.google.code.findbugs</groupId>
+			<artifactId>jsr305</artifactId>
+			<version>3.0.1</version>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
+
+	<dependencyManagement>
+		<dependencies>
+
+			<dependency>
+				<groupId>org.apache.hadoop</groupId>
+				<artifactId>hadoop-common</artifactId>
+				<version>${dhp.hadoop.version}</version>
+				<scope>provided</scope>
+				<exclusions>
+					<exclusion>
+						<artifactId>servlet-api</artifactId>
+						<groupId>javax.servlet</groupId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.hadoop</groupId>
+				<artifactId>hadoop-yarn-common</artifactId>
+				<version>${dhp.hadoop.version}</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.hadoop</groupId>
+				<artifactId>hadoop-mapreduce-client-common</artifactId>
+				<version>${dhp.hadoop.version}</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.hadoop</groupId>
+				<artifactId>hadoop-yarn-common</artifactId>
+				<version>${dhp.hadoop.version}</version>
+				<scope>test</scope>
+				<type>test-jar</type>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.hadoop</groupId>
+				<artifactId>hadoop-mapreduce-client-common</artifactId>
+				<version>${dhp.hadoop.version}</version>
+				<scope>test</scope>
+				<type>test-jar</type>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.hadoop</groupId>
+				<artifactId>hadoop-mapreduce-client-app</artifactId>
+				<version>${dhp.hadoop.version}</version>
+				<scope>provided</scope>
+				<exclusions>
+					<exclusion>
+						<artifactId>servlet-api</artifactId>
+						<groupId>javax.servlet</groupId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.hadoop</groupId>
+				<artifactId>hadoop-mapreduce-client-core</artifactId>
+				<version>${dhp.hadoop.version}</version>
+				<scope>provided</scope>
+				<exclusions>
+					<exclusion>
+						<artifactId>servlet-api</artifactId>
+						<groupId>javax.servlet</groupId>
+					</exclusion>
+					<!-- added temporarily due to unresolvable transitive dependencies: more in #2810#note-3 -->
+					<exclusion>
+						<groupId>org.apache.calcite</groupId>
+						<artifactId>calcite-core</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.apache.calcite</groupId>
+						<artifactId>calcite-avatica</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.hadoop</groupId>
+				<artifactId>hadoop-hdfs</artifactId>
+				<version>${dhp.hadoop.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.hadoop</groupId>
+				<artifactId>hadoop-hdfs</artifactId>
+				<version>${dhp.hadoop.version}</version>
+				<type>test-jar</type>
+				<scope>test</scope>
+			</dependency>
+
+
+			<!-- Oozie dependencies -->
+			<dependency>
+				<groupId>org.apache.oozie</groupId>
+				<artifactId>oozie-core</artifactId>
+				<version>${dhp.oozie.version}</version>
+				<exclusions>
+					<!-- conflicts -->
+					<exclusion>
+						<artifactId>servlet-api</artifactId>
+						<groupId>javax.servlet</groupId>
+					</exclusion>
+					<!-- added due to unresolvable transitive dependencies: more in #787 -->
+					<exclusion>
+						<groupId>org.apache.calcite</groupId>
+						<artifactId>calcite-core</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.apache.calcite</groupId>
+						<artifactId>calcite-avatica</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.oozie</groupId>
+				<artifactId>oozie-client</artifactId>
+				<version>${dhp.oozie.version}</version>
+				<exclusions>
+					<!-- conflicts -->
+					<exclusion>
+						<artifactId>slf4j-simple</artifactId>
+						<groupId>org.slf4j</groupId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.spark</groupId>
+				<artifactId>spark-core_2.10</artifactId>
+				<version>${dhp.spark.version}</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.spark</groupId>
+				<artifactId>spark-sql_2.10</artifactId>
+				<version>${dhp.spark.version}</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>com.databricks</groupId>
+				<artifactId>spark-avro_2.10</artifactId>
+				<version>1.1.0-${dhp.cdh.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.databricks</groupId>
+				<artifactId>spark-csv_2.10</artifactId>
+				<version>1.5.0</version>
+			</dependency>
+
+			<dependency>
+				<groupId>pl.edu.icm.spark-utils</groupId>
+				<artifactId>spark-utils</artifactId>
+				<version>1.0.0</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.mongodb.spark</groupId>
+				<artifactId>mongo-spark-connector_2.10</artifactId>
+				<version>2.2.1</version>
+				<scope>provided</scope>
+			</dependency>
+
+
+			<!-- Avro dependencies -->
+			<dependency>
+				<groupId>org.apache.avro</groupId>
+				<artifactId>avro</artifactId>
+				<version>${dhp.avro.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.avro</groupId>
+				<artifactId>avro-mapred</artifactId>
+				<version>${dhp.avro.version}</version>
+				<classifier>hadoop2</classifier>
+				<exclusions>
+					<!-- conflicts -->
+					<exclusion>
+						<artifactId>servlet-api</artifactId>
+						<groupId>org.mortbay.jetty</groupId>
+					</exclusion>
+					<exclusion>
+						<artifactId>netty</artifactId>
+						<groupId>io.netty</groupId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+
+
+			<!-- Pig dependencies -->
+			<dependency>
+				<groupId>org.apache.pig</groupId>
+				<artifactId>pig</artifactId>
+				<version>${dhp.pig.version}</version>
+				<scope>provided</scope>
+				<exclusions>
+					<exclusion>
+						<groupId>org.mortbay.jetty</groupId>
+						<artifactId>servlet-api-2.5</artifactId>
+					</exclusion>
+					<exclusion>
+						<artifactId>servlet-api</artifactId>
+						<groupId>javax.servlet</groupId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.pig</groupId>
+				<artifactId>piggybank</artifactId>
+				<version>${dhp.pig.version}</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.pig</groupId>
+				<artifactId>pigunit</artifactId>
+				<version>${dhp.pig.version}</version>
+			</dependency>
+
+			<!-- Cermine dependencies -->
+			<dependency>
+				<groupId>pl.edu.icm.cermine</groupId>
+				<artifactId>cermine-impl</artifactId>
+				<version>1.13</version>
+			</dependency>
+
+			<!-- Coansys dependencies -->
+			<dependency>
+				<groupId>pl.edu.icm.coansys</groupId>
+				<artifactId>models</artifactId>
+				<version>${dhp.coansys.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>pl.edu.icm.coansys</groupId>
+				<artifactId>citation-matching-core-code</artifactId>
+				<version>${dhp.coansys.version}</version>
+				<exclusions>
+					<!-- unneded cdh5 which should be provided-->
+					<exclusion>
+						<groupId>org.apache.avro</groupId>
+						<artifactId>avro-mapred</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.apache.hadoop</groupId>
+						<artifactId>hadoop-client</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.apache.hadoop</groupId>
+						<artifactId>hadoop-yarn-api</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.apache.hadoop</groupId>
+						<artifactId>hadoop-yarn-client</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.apache.hadoop</groupId>
+						<artifactId>hadoop-mapreduce-client-common</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.apache.hadoop</groupId>
+						<artifactId>hadoop-mapreduce-client-app</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.apache.hadoop</groupId>
+						<artifactId>hadoop-mapreduce-client-core</artifactId>
+					</exclusion>
+					<exclusion>
+						<!-- conflicts -->
+						<groupId>org.slf4j</groupId>
+						<artifactId>slf4j-simple</artifactId>
+					</exclusion>
+				</exclusions>
+
+			</dependency>
+
+			<!-- dnet dependencies -->
+			<dependency>
+				<groupId>eu.dnetlib</groupId>
+				<artifactId>dnet-openaireplus-mapping-utils</artifactId>
+				<version>[6.0.0, 7.0.0)</version>
+				<exclusions>
+					<!-- unneeded dependencies -->
+					<exclusion>
+						<groupId>org.apache.hadoop</groupId>
+						<artifactId>hadoop-core</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.apache.hadoop</groupId>
+						<artifactId>hadoop-hdfs</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.apache.zookeeper</groupId>
+						<artifactId>zookeeper</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>jgrapht</groupId>
+						<artifactId>jgrapht</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+
+			<dependency>
+				<groupId>eu.dnetlib</groupId>
+				<artifactId>dnet-objectstore-rmi</artifactId>
+				<version>[2.0.0, 3.0.0)</version>
+			</dependency>
+
+			<dependency>
+				<groupId>eu.dnetlib</groupId>
+				<artifactId>cnr-rmi-api</artifactId>
+				<version>[2.0.0, 3.0.0)</version>
+			</dependency>
+
+			<dependency>
+				<groupId>eu.dnetlib</groupId>
+				<artifactId>cnr-resultset-client</artifactId>
+				<version>[2.0.0, 3.0.0)</version>
+				<exclusions>
+					<!-- unneeded -->
+					<exclusion>
+						<groupId>org.springframework</groupId>
+						<artifactId>spring-web</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.springframework</groupId>
+						<artifactId>spring-webmvc</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+
+			<dependency>
+				<groupId>eu.dnetlib</groupId>
+				<artifactId>dnet-actionmanager-common</artifactId>
+				<version>[6.0.0, 7.0.0)</version>
+				<exclusions>
+					<!-- duplicate with different groupId -->
+					<exclusion>
+						<groupId>apache</groupId>
+						<artifactId>commons-logging</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+
+			<dependency>
+				<groupId>eu.dnetlib</groupId>
+				<artifactId>cnr-service-utils</artifactId>
+				<version>[1.0.0, 2.0.0)</version>
+			</dependency>
+
+			<!-- command line arguments parser -->
+			<dependency>
+				<groupId>com.beust</groupId>
+				<artifactId>jcommander</artifactId>
+				<version>1.60</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.google.code.gson</groupId>
+				<artifactId>gson</artifactId>
+				<version>2.8.0</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.googlecode.json-simple</groupId>
+				<artifactId>json-simple</artifactId>
+				<version>1.1.1</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-lang3</artifactId>
+				<version>3.5</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-collections4</artifactId>
+				<version>4.1</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.thoughtworks.xstream</groupId>
+				<artifactId>xstream</artifactId>
+				<version>1.4.9</version>
+			</dependency>
+
+			<dependency>
+				<groupId>xalan</groupId>
+				<artifactId>xalan</artifactId>
+				<version>2.7.2</version>
+			</dependency>
+
+			<dependency>
+				<groupId>xml-apis</groupId>
+				<artifactId>xml-apis</artifactId>
+				<version>1.4.01</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.jdom</groupId>
+				<artifactId>jdom</artifactId>
+				<version>1.1.3</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.jsoup</groupId>
+				<artifactId>jsoup</artifactId>
+				<version>1.10.2</version>
+			</dependency>
+
+			<dependency>
+				<groupId>net.sf.opencsv</groupId>
+				<artifactId>opencsv</artifactId>
+				<version>2.3</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.googlecode.protobuf-java-format</groupId>
+				<artifactId>protobuf-java-format</artifactId>
+				<version>1.2</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.google.protobuf</groupId>
+				<artifactId>protobuf-java</artifactId>
+				<version>2.5.0</version>
+			</dependency>
+
+			<!-- this version is required by hadoop-core 2.6.0 -->
+			<dependency>
+				<groupId>com.google.guava</groupId>
+				<artifactId>guava</artifactId>
+				<version>12.0</version>
+			</dependency>
+
+			<dependency>
+				<groupId>commons-cli</groupId>
+				<artifactId>commons-cli</artifactId>
+				<version>1.3.1</version>
+			</dependency>
+
+			<dependency>
+				<groupId>commons-io</groupId>
+				<artifactId>commons-io</artifactId>
+				<version>2.5</version>
+			</dependency>
+
+			<dependency>
+				<groupId>de.sven-jacobs</groupId>
+				<artifactId>loremipsum</artifactId>
+				<version>1.0</version>
+			</dependency>
+
+			<dependency>
+				<groupId>net.schmizz</groupId>
+				<artifactId>sshj</artifactId>
+				<version>0.10.0</version>
+			</dependency>
+
+			<!-- this version has to be aligned with net.schmizz:sshj -->
+			<dependency>
+				<groupId>org.bouncycastle</groupId>
+				<artifactId>bcprov-jdk15on</artifactId>
+				<version>1.50</version>
+			</dependency>
+
+			<!-- Needed to run Avro-based map-reduce -->
+			<dependency>
+				<groupId>com.thoughtworks.paranamer</groupId>
+				<artifactId>paranamer</artifactId>
+				<version>2.8</version>
+			</dependency>
+
+			<!-- Needed to run Pig jobs -->
+			<dependency>
+				<groupId>com.linkedin.datafu</groupId>
+				<artifactId>datafu</artifactId>
+				<version>1.2.0</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.cxf</groupId>
+				<artifactId>cxf-rt-frontend-jaxws</artifactId>
+				<version>${cxf.version}</version>
+			</dependency>
+
+			<!-- this version has to be aligned with cdh5.9.0 sharelib -->
+			<dependency>
+				<groupId>com.sun.xml.bind</groupId>
+				<artifactId>jaxb-impl</artifactId>
+				<version>2.2.7</version>
+				<scope>runtime</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-beans</artifactId>
+				<version>${spring.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-context</artifactId>
+				<version>${spring.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.scala-lang</groupId>
+				<artifactId>scala-library</artifactId>
+				<version>${scala.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>commons-beanutils</groupId>
+				<artifactId>commons-beanutils</artifactId>
+				<version>1.9.3</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.curator</groupId>
+				<artifactId>curator-test</artifactId>
+				<version>3.3.0</version>
+				<scope>test</scope>
+			</dependency>
+
+		</dependencies>
+	</dependencyManagement>
+
+
+	<build>
+		<directory>target</directory>
+		<outputDirectory>target/classes</outputDirectory>
+		<finalName>${project.artifactId}-${project.version}</finalName>
+		<testOutputDirectory>target/test-classes</testOutputDirectory>
+
+		<pluginManagement>
+			<plugins>
+
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>3.6.0</version>
+					<configuration>
+						<source>1.8</source>
+						<target>1.8</target>
+						<encoding>${project.build.sourceEncoding}</encoding>
+					</configuration>
+				</plugin>
+
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-jar-plugin</artifactId>
+					<version>3.0.2</version>
+				</plugin>
+
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-source-plugin</artifactId>
+					<version>3.0.1</version>
+					<executions>
+						<execution>
+							<id>attach-sources</id>
+							<phase>verify</phase>
+							<goals>
+								<goal>jar-no-fork</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-surefire-plugin</artifactId>
+					<version>2.19.1</version>
+					<configuration>
+						<redirectTestOutputToFile>true</redirectTestOutputToFile>
+					</configuration>
+				</plugin>
+
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-javadoc-plugin</artifactId>
+					<version>2.10.4</version>
+					<configuration>
+						<detectLinks>true</detectLinks>
+					</configuration>
+				</plugin>
+
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-dependency-plugin</artifactId>
+					<version>3.0.0</version>
+				</plugin>
+
+				<plugin>
+					<groupId>net.alchim31.maven</groupId>
+					<artifactId>scala-maven-plugin</artifactId>
+					<version>3.2.2</version>
+					<executions>
+						<execution>
+							<id>scala-compile-first</id>
+							<phase>process-resources</phase>
+							<goals>
+								<goal>add-source</goal>
+								<goal>compile</goal>
+							</goals>
+						</execution>
+						<execution>
+							<id>scala-test-compile</id>
+							<phase>process-test-resources</phase>
+							<goals>
+								<goal>testCompile</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+
+				<!-- Plugin that generates Java classes from Avro schemas -->
+				<plugin>
+					<groupId>org.apache.avro</groupId>
+					<artifactId>avro-maven-plugin</artifactId>
+					<version>1.7.7</version>
+				</plugin>
+
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>build-helper-maven-plugin</artifactId>
+					<version>1.12</version>
+				</plugin>
+
+				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself. -->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											org.apache.avro
+										</groupId>
+										<artifactId>
+											avro-maven-plugin
+										</artifactId>
+										<versionRange>
+											[1.7.4,)
+										</versionRange>
+										<goals>
+											<goal>idl-protocol</goal>
+											<goal>schema</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore/>
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											org.codehaus.mojo
+										</groupId>
+										<artifactId>
+											build-helper-maven-plugin
+										</artifactId>
+										<versionRange>
+											[1.7,)
+										</versionRange>
+										<goals>
+											<goal>add-source</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore/>
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											org.apache.maven.plugins
+										</groupId>
+										<artifactId>
+											maven-plugin-plugin
+										</artifactId>
+										<versionRange>
+											[3.2,)
+										</versionRange>
+										<goals>
+											<goal>descriptor</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+
+		<plugins>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<version>2.5.3</version>
+			</plugin>
+
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.7.9</version>
+				<configuration>
+					<excludes>
+						<exclude>**/schemas/*</exclude>
+						<exclude>**/com/cloudera/**/*</exclude>
+						<exclude>**/org/apache/avro/io/**/*</exclude>
+					</excludes>
+				</configuration>
+				<executions>
+					<execution>
+						<id>default-prepare-agent</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>default-report</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+
+		<extensions>
+			<extension>
+				<groupId>org.apache.maven.wagon</groupId>
+				<artifactId>wagon-ssh</artifactId>
+				<version>2.10</version>
+			</extension>
+		</extensions>
+
+	</build>
+
+
+	<distributionManagement>
+		<snapshotRepository>
+			<id>dnet45-snapshots</id>
+			<name>DNet45 Snapshots</name>
+			<url>http://maven.research-infrastructures.eu/nexus/content/repositories/dnet45-snapshots</url>
+			<layout>default</layout>
+		</snapshotRepository>
+		<repository>
+			<id>dnet45-releases</id>
+			<url>http://maven.research-infrastructures.eu/nexus/content/repositories/dnet45-releases</url>
+		</repository>
+	</distributionManagement>
+
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.10.4</version>
+				<configuration>
+					<detectLinks>true</detectLinks>
+				</configuration>
+			</plugin>
+		</plugins>
+	</reporting>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<spring.version>[4.2.5.RELEASE]</spring.version>
+		<cxf.version>[3.1.5]</cxf.version>
+
+		<dhp.cdh.version>cdh5.9.0</dhp.cdh.version>
+
+		<dhp.oozie.version>4.1.0-${dhp.cdh.version}</dhp.oozie.version>
+		<dhp.pig.version>0.12.0-${dhp.cdh.version}</dhp.pig.version>
+		<dhp.avro.version>1.7.6-${dhp.cdh.version}</dhp.avro.version>
+		<dhp.hadoop.version>2.6.0-${dhp.cdh.version}</dhp.hadoop.version>
+		<dhp.spark.version>1.6.0-${dhp.cdh.version}</dhp.spark.version>
+		<scala.version>2.10.6</scala.version>
+	</properties>
+</project>
+

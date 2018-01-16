@@ -1,0 +1,29 @@
+@namespace("eu.dnetlib.dhp.audit.schemas")
+protocol DHP {
+
+	record Cause {
+//		generic cause code, root exception class name when derived from exception         
+        string code;
+//		cause message
+		union { null , string } message = null;
+	}
+
+    record Fault {
+//      input object identifier
+        string inputObjectId;
+//		fault creation timestamp        
+        long timestamp;
+//      generic fault code, root exception class name when derived from exception         
+        string code;
+//		fault message
+		union { null , string } message = null;
+//		stack trace
+		union { null , string } stackTrace = null;
+//		fault causes, array is indexed with cause depth         
+        union { null , array<Cause> } causes = null;
+//		Other supplementary data related to specific type of fault. 
+//		See parameters description in oozie workflow.xml documentation of modules 
+//		that use this structure for information what exactly can be stored as supplementary data.
+		union { null , map<string> } supplementaryData = null;        
+    }
+}

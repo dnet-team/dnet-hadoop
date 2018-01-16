@@ -1,0 +1,16 @@
+@namespace("eu.dnetlib.dhp.common.schemas")
+protocol DHP{
+
+    enum ReportEntryType {
+        COUNTER, DURATION
+    }
+    
+    
+    record ReportEntry {
+    
+        string key;
+        ReportEntryType type;
+        string value;
+    
+    }
+}
