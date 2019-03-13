@@ -1,5 +1,12 @@
 package eu.dnetlib.collector.worker;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import eu.dnetlib.collector.worker.model.ApiDescriptor;
+import eu.dnetlib.collector.worker.plugins.CollectorPlugin;
+import eu.dnetlib.collector.worker.utils.CollectorPluginEnumerator;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.SequenceFile;
 import org.apache.hadoop.io.Text;
@@ -10,21 +17,21 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import eu.dnetlib.collector.worker.model.ApiDescriptor;
-import eu.dnetlib.collector.worker.plugins.CollectorPlugin;
-import eu.dnetlib.collector.worker.utils.CollectorPluginEnumerator;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.FSDataOutputStream;
-import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.fs.Path;
-
 import java.io.IOException;
 import java.net.URI;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Stream;
 
+
+/**
+ *
+ * DnetCollectortWorkerApplication is the main class responsible to start
+ * the Dnet Collection into HDFS.
+ * This module will be executed on the hadoop cluster and taking in input some parameters
+ * that tells it which is the right collector plugin to use  and where store the data into HDFS path
+ *
+ *
+ * @author Sandro La Bruzzo
+ */
 @SpringBootApplication
 public class DnetCollectorWorkerApplication implements CommandLineRunner {
 
@@ -42,7 +49,9 @@ public class DnetCollectorWorkerApplication implements CommandLineRunner {
 	}
 
 	/**
-	 *
+	 * This module expect two arguments:
+	 * 	path hdfs where store the sequential file.
+	 * 	Json serialization of {@link ApiDescriptor}
 	 */
 	@Override
 	public void run(final String... args) throws Exception {
@@ -70,12 +79,9 @@ public class DnetCollectorWorkerApplication implements CommandLineRunner {
 		// Because of Maven
 		conf.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
 		conf.set("fs.file.impl", org.apache.hadoop.fs.LocalFileSystem.class.getName());
-		// Set HADOOP user
-		System.setProperty("HADOOP_USER_NAME", "sandro.labruzzo");
 		System.setProperty("hadoop.home.dir", "/");
 		//Get the filesystem - HDFS
 		FileSystem fs = FileSystem.get(URI.create(hdfsuri), conf);
-
 		Path hdfswritepath = new Path(hdfsPath);
 
 		log.info("Created path "+hdfswritepath.toString());
