@@ -23,6 +23,7 @@
         <!--<module>dhp-build</module>-->
         <module>dhp-common</module>
         <module>dhp-workflows</module>
+	<module>dhp-applications</module>
     </modules>
 
     <issueManagement>
