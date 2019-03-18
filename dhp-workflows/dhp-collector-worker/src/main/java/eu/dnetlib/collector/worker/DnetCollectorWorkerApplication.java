@@ -56,7 +56,12 @@ public class DnetCollectorWorkerApplication implements CommandLineRunner {
 	@Override
 	public void run(final String... args) throws Exception {
 		if (args.length == 0) { return; }
-		if (args.length != 2) { throw new DnetCollectorException("Invalid number of parameters, expected: hdfs_path and json_api_description"); }
+		if (args.length != 3) { throw new DnetCollectorException("Invalid number of parameters, expected: hdfs_path and json_api_description"); }
+
+		//TODO : migrate to https://commons.apache.org/proper/commons-cli/usage.html
+
+
+
 
 		final String hdfsPath = args[0];
 
@@ -64,13 +69,16 @@ public class DnetCollectorWorkerApplication implements CommandLineRunner {
 
 		final String json = args[1];
 
+
+		final String nameNode = args[2];
+
 		log.info("json = "+json);
 		final ObjectMapper jsonMapper = new ObjectMapper();
 		final ApiDescriptor api = jsonMapper.readValue(json, ApiDescriptor.class);
 
 		final CollectorPlugin plugin = collectorPluginEnumerator.getPluginByProtocol(api.getProtocol());
 
-		final String hdfsuri ="hdfs://hadoop-rm1.garr-pa1.d4science.org:8020";
+		final String hdfsuri =nameNode;
 
 		// ====== Init HDFS File System Object
 		Configuration conf = new Configuration();
@@ -79,6 +87,8 @@ public class DnetCollectorWorkerApplication implements CommandLineRunner {
 		// Because of Maven
 		conf.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
 		conf.set("fs.file.impl", org.apache.hadoop.fs.LocalFileSystem.class.getName());
+
+		System.setProperty("HADOOP_USER_NAME", "sandro.labruzzo");
 		System.setProperty("hadoop.home.dir", "/");
 		//Get the filesystem - HDFS
 		FileSystem fs = FileSystem.get(URI.create(hdfsuri), conf);

@@ -1,0 +1,34 @@
+<record xmlns="http://www.openarchives.org/OAI/2.0/">
+    <header>
+        <identifier>oai:vocesdEducacion:article/100</identifier>
+        <datestamp>2018-09-02T03:21:17Z</datestamp>
+        <setSpec>voces:art</setSpec>
+    </header>
+    <metadata>
+        <oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/  http://www.openarchives.org/OAI/2.0/oai_dc.xsd">
+            <dc:title xml:lang="es-ES">¿Cómo son los jóvenes estudiantes? Una propuesta analítica desde la investigación educativa</dc:title>
+            <dc:title xml:lang="en-US">How are the young students? An analytical proposal from educational research</dc:title>
+            <dc:creator>Meneses Reyes, Marcela</dc:creator>
+            <dc:creator>Pogliaghi, Leticia</dc:creator>
+            <dc:description xml:lang="es-ES">El objetivo de este artículo consiste en una revisión de cómo se ha estudiado a los jóvenes estudiantes desde la investigación educativa, en particular a los del nivel medio superior en México, para la elaboración de una propuesta analítica propia para su abordaje en su doble condición de estudiantes y de jóvenes.
+                Palabras clave: Estudiantes, jóvenes, educación media superior, investigación educativa</dc:description>
+            <dc:description xml:lang="en-US">The objective of this article is to make a review of how young students have been studied from the educational research, particularlly those of high school level in Mexico, for the elaboration of an own analytical proposal for the study of these subjects in their double condition as students and as young people.
+                Keywords: Students, young people, high school, educational research</dc:description>
+            <dc:publisher xml:lang="es-ES">Voces de la educación</dc:publisher>
+            <dc:date>2018-06-15</dc:date>
+            <dc:type>info:eu-repo/semantics/article</dc:type>
+            <dc:type>info:eu-repo/semantics/publishedVersion</dc:type>
+            <dc:format>application/pdf</dc:format>
+            <dc:identifier>http://www.revista.vocesdelaeducacion.com.mx/index.php/voces/article/view/100</dc:identifier>
+            <dc:source xml:lang="es-AR">Voces de la educación; ##issue.vol## 3 ##issue.no## 5 (2018); 170-178</dc:source>
+            <dc:source xml:lang="es-ES">Voces de la educación; Vol. 3 Núm. 5 (2018); 170-178</dc:source>
+            <dc:source xml:lang="en-US">Voices of education; Vol 3 No 5 (2018); 170-178</dc:source>
+            <dc:source>2448-6248</dc:source>
+            <dc:source>1665-1596</dc:source>
+            <dc:language>spa</dc:language>
+            <dc:relation>http://www.revista.vocesdelaeducacion.com.mx/index.php/voces/article/view/100/84</dc:relation>
+            <dc:rights xml:lang="en-US">Copyright (c) 2018 Marcela Meneses Reyes, Leticia Pogliaghi</dc:rights>
+            <dc:rights xml:lang="en-US">http://creativecommons.org/licenses/by-nc-sa/4.0</dc:rights>
+        </oai_dc:dc>
+    </metadata>
+</record>

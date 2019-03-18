@@ -27,7 +27,7 @@ public class OaiCollectorPlugin implements CollectorPlugin {
 	private static final String FORMAT_PARAM = "format";
 	private static final String OAI_SET_PARAM = "set";
 	private static final Object OAI_FROM_DATE_PARAM = "fromDate";
-	private static final Object AI_UNTIL_DATE_PARAM = "untilDate";
+	private static final Object OAI_UNTIL_DATE_PARAM = "untilDate";
 
 	@Autowired
 	private OaiIteratorFactory oaiIteratorFactory;
@@ -38,7 +38,7 @@ public class OaiCollectorPlugin implements CollectorPlugin {
 		final String mdFormat = api.getParams().get(FORMAT_PARAM);
 		final String setParam = api.getParams().get(OAI_SET_PARAM);
 		final String fromDate = api.getParams().get(OAI_FROM_DATE_PARAM);
-		final String untilDate = api.getParams().get(AI_UNTIL_DATE_PARAM);
+		final String untilDate = api.getParams().get(OAI_UNTIL_DATE_PARAM);
 
 		final List<String> sets = new ArrayList<>();
 		if (setParam != null) {

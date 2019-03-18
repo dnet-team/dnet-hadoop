@@ -1,0 +1,53 @@
+<workflow-app name="Oozie_Java_Wf" xmlns="uri:oozie:workflow:0.5">
+    <start to="DeleteMDStoresNative"/>
+    <kill name="Kill">
+        <message>Action failed, error message[${wf:errorMessage(wf:lastErrorNode())}]</message>
+    </kill>
+
+    <action name="DeleteMDStoresNative">
+        <fs>
+            <delete path='/user/sandro.labruzzo/mdstores/oai_1'/>
+        </fs>
+        <ok to="CollectionWorker"/>
+        <error to="Kill"/>
+    </action>
+
+
+    <action name="CollectionWorker">
+        <shell xmlns="uri:oozie:shell-action:0.1">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <exec>lib/dhp-collector-worker-1.0.0.jar</exec>
+            <argument>/user/sandro.labruzzo/mdstores/oai_1</argument>
+            <argument>{&quot;id&quot;:&quot;oai&quot;,&quot;baseUrl&quot;:&quot;http://www.revista.vocesdelaeducacion.com.mx/index.php/index/oai&quot;,&quot;protocol&quot;:&quot;oai&quot;,&quot;params&quot;:{&quot;format&quot;:&quot;oai_dc&quot;}}</argument>
+            <argument>${nameNode}</argument>
+            <capture-output/>
+        </shell>
+        <ok to="mdBuilder"/>
+        <error to="Kill"/>
+    </action>
+
+    <action name="mdBuilder">
+        <spark xmlns="uri:oozie:spark-action:0.2">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <master>yarn</master>
+            <mode>cluster</mode>
+            <name>MDBuilder</name>
+            <class>eu.dnetlib.dhp.collection.GenerateNativeStoreSparkJob</class>
+            <jar>dhp-aggregations-1.0.0-SNAPSHOT.jar</jar>
+            <spark-opts>--num-executors 50 --conf spark.yarn.jars=&quot;hdfs://hadoop-rm1.garr-pa1.d4science.org:8020/user/oozie/share/lib/lib_20180405103059/spark2&quot;</spark-opts>
+            <arg>XML</arg>
+            <arg>1000</arg>
+            <arg>{"datasourceId":"pippo","datasourceName":"puppa","nsPrefix":"ns_prefix"}</arg>
+            <arg>./*[local-name()='record']/*[local-name()='header']/*[local-name()='identifier']</arg>
+            <arg>/user/sandro.labruzzo/mdstores/oai_1</arg>
+            <arg>/user/sandro.labruzzo/mdstores/mdstore_1</arg>
+        </spark>
+        <ok to="End"/>
+        <error to="Kill"/>
+    </action>
+
+
+    <end name="End"/>
+</workflow-app>
