@@ -21,10 +21,8 @@
 
     <modules>
         <!--<module>dhp-build</module>-->
-        <!--<module>dhp-common</module>-->
-        <!--<module>dhp-schemas</module>-->
-        <!--<module>dhp-wf</module>-->
-        <!--<module>dhp-collector-worker</module>-->
+        <module>dhp-common</module>
+        <module>dhp-workflows</module>
     </modules>
 
     <issueManagement>
@@ -104,6 +102,7 @@
                 <groupId>org.apache.hadoop</groupId>
                 <artifactId>hadoop-hdfs</artifactId>
                 <version>${dhp.hadoop.version}</version>
+                <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>org.apache.spark</groupId>
@@ -117,6 +116,20 @@
                 <version>${dhp.spark.version}</version>
                 <scope>provided</scope>
             </dependency>
+
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>${dhp.commons.lang.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>commons-codec</groupId>
+                <artifactId>commons-codec</artifactId>
+                <version>1.9</version>
+            </dependency>
+
+
 
         </dependencies>
     </dependencyManagement>
@@ -239,6 +252,7 @@
         <dhp.cdh.version>cdh5.9.2</dhp.cdh.version>
         <dhp.hadoop.version>2.6.0-${dhp.cdh.version}</dhp.hadoop.version>
         <dhp.spark.version>2.2.0</dhp.spark.version>
+        <dhp.commons.lang.version>3.5</dhp.commons.lang.version>
         <scala.version>2.11.8</scala.version>
     </properties>
 </project>
