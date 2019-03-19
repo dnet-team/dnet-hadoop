@@ -1,21 +1,23 @@
 package eu.dnetlib.data.mdstore.manager.model;
 
 import java.io.Serializable;
-import java.util.UUID;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 @Entity
-@Table(name = "mdstores")
-public class MDStore implements Serializable {
+@Table(name = "mdstores_with_info")
+public class MDStoreWithInfo implements Serializable {
 
 	/**
 	 *
 	 */
-	private static final long serialVersionUID = 3160530489149700055L;
+	private static final long serialVersionUID = -8445784770687571492L;
 
 	@Id
 	@Column(name = "id")
@@ -27,7 +29,6 @@ public class MDStore implements Serializable {
 	@Column(name = "layout")
 	private String layout;
 
-
 	@Column(name = "interpretation")
 	private String interpretation;
 
@@ -37,6 +38,15 @@ public class MDStore implements Serializable {
 	@Column(name = "api_id")
 	private String apiId ;
 
+	@Column(name = "current_version")
+	private String currentVersion;
+
+	@Column(name = "lastupdate")
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date lastUpdate;
+
+	@Column(name = "size")
+	private int size;
 
 	public String getId() {
 		return id;
@@ -86,23 +96,29 @@ public class MDStore implements Serializable {
 		this.apiId = apiId;
 	}
 
-	public static MDStore newInstance(final String format, final String layout, final String interpretation) {
-		return newInstance(null, null, format, layout, interpretation);
+	public String getCurrentVersion() {
+		return currentVersion;
 	}
 
-	public static MDStore newInstance(final String dsId, final String apiId, final String format, final String layout, final String interpretation) {
-		final MDStore md = new MDStore();
-		md.setId("md-" + UUID.randomUUID());
-		md.setDatasourceId(dsId);
-		md.setApiId(apiId);
-		md.setFormat(format);
-		md.setLayout(layout);
-		md.setInterpretation(interpretation);
-		return md;
+	public void setCurrentVersion(String currentVersion) {
+		this.currentVersion = currentVersion;
 	}
 
+	public Date getLastUpdate() {
+		return lastUpdate;
+	}
 
+	public void setLastUpdate(Date lastUpdate) {
+		this.lastUpdate = lastUpdate;
+	}
 
+	public int getSize() {
+		return size;
+	}
+
+	public void setSize(int size) {
+		this.size = size;
+	}
 
 
 }

@@ -8,4 +8,7 @@ import eu.dnetlib.data.mdstore.manager.model.Transaction;
 @Repository
 public interface TransactionRepository extends JpaRepository<Transaction, String> {
 
+	void deleteByMdstore(String id);
+
+	int countByMdstoreAndActive(String id, boolean active);
 }

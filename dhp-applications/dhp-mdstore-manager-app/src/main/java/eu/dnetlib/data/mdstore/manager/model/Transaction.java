@@ -25,8 +25,14 @@ public class Transaction implements Serializable{
 	@Column(name = "mdstore")
 	private String mdstore;
 
+	@Column(name = "current")
+	private boolean current;
+
 	@Column(name = "active")
 	private boolean active;
+
+	@Column(name = "readcount")
+	private int readCount;
 
 	@Column(name = "lastupdate")
 	@Temporal(TemporalType.TIMESTAMP)
@@ -51,12 +57,28 @@ public class Transaction implements Serializable{
 		this.mdstore = mdstore;
 	}
 
+	public boolean isCurrent() {
+		return current;
+	}
+
+	public void setCurrent(boolean current) {
+		this.current = current;
+	}
+
 	public boolean isActive() {
 		return active;
 	}
 
 	public void setActive(boolean active) {
 		this.active = active;
+	}
+
+	public int getReadCount() {
+		return readCount;
+	}
+
+	public void setReadCount(int readCount) {
+		this.readCount = readCount;
 	}
 
 	public Date getLastUpdate() {
@@ -74,6 +96,19 @@ public class Transaction implements Serializable{
 	public void setSize(int size) {
 		this.size = size;
 	}
+
+	public static Transaction newInstance(final String mdId) {
+		final Transaction t = new Transaction();
+		t.setId(mdId + "-" + new Date().getTime());
+		t.setMdstore(mdId);
+		t.setLastUpdate(null);
+		t.setActive(false);
+		t.setCurrent(false);
+		t.setReadCount(0);
+		t.setSize(0);
+		return t;
+	}
+
 
 
 }
