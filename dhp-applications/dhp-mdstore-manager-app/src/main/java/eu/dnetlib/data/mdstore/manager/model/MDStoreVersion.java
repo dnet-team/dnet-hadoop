@@ -11,8 +11,9 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@Table(name = "transactions")
-public class Transaction implements Serializable{
+@Table(name = "mdstore_versions")
+public class MDStoreVersion implements Serializable {
+
 	/**
 	 *
 	 */
@@ -25,11 +26,8 @@ public class Transaction implements Serializable{
 	@Column(name = "mdstore")
 	private String mdstore;
 
-	@Column(name = "current")
-	private boolean current;
-
-	@Column(name = "active")
-	private boolean active;
+	@Column(name = "writing")
+	private boolean writing;
 
 	@Column(name = "readcount")
 	private int readCount;
@@ -40,6 +38,17 @@ public class Transaction implements Serializable{
 
 	@Column(name = "size")
 	private int size;
+
+	public static MDStoreVersion newInstance(final String mdId, boolean writing) {
+		final MDStoreVersion t = new MDStoreVersion();
+		t.setId(mdId + "-" + new Date().getTime());
+		t.setMdstore(mdId);
+		t.setLastUpdate(null);
+		t.setWriting(writing);
+		t.setReadCount(0);
+		t.setSize(0);
+		return t;
+	}
 
 	public String getId() {
 		return id;
@@ -57,20 +66,12 @@ public class Transaction implements Serializable{
 		this.mdstore = mdstore;
 	}
 
-	public boolean isCurrent() {
-		return current;
+	public boolean isWriting() {
+		return writing;
 	}
 
-	public void setCurrent(boolean current) {
-		this.current = current;
-	}
-
-	public boolean isActive() {
-		return active;
-	}
-
-	public void setActive(boolean active) {
-		this.active = active;
+	public void setWriting(boolean writing) {
+		this.writing = writing;
 	}
 
 	public int getReadCount() {
@@ -96,19 +97,5 @@ public class Transaction implements Serializable{
 	public void setSize(int size) {
 		this.size = size;
 	}
-
-	public static Transaction newInstance(final String mdId) {
-		final Transaction t = new Transaction();
-		t.setId(mdId + "-" + new Date().getTime());
-		t.setMdstore(mdId);
-		t.setLastUpdate(null);
-		t.setActive(false);
-		t.setCurrent(false);
-		t.setReadCount(0);
-		t.setSize(0);
-		return t;
-	}
-
-
 
 }
