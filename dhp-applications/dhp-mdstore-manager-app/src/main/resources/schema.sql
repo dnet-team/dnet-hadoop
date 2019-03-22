@@ -43,7 +43,7 @@ FROM
 	mdstores md
 	LEFT OUTER JOIN mdstore_current_versions cv ON (md.id = cv.mdstore)
 	LEFT OUTER JOIN mdstore_versions v1 ON (cv.current_version = v1.id)
-	LEFT OUTER JOIN mdstore_versions v2 ON (md.id = v2.id)
+	LEFT OUTER JOIN mdstore_versions v2 ON (md.id = v2.mdstore)
 GROUP BY md.id,
 	md.format,
 	md.layout,
