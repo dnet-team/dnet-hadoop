@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.google.common.collect.Lists;
+
 import eu.dnetlib.data.mdstore.manager.exceptions.MDStoreManagerException;
 import eu.dnetlib.data.mdstore.manager.exceptions.NoContentException;
 import eu.dnetlib.data.mdstore.manager.model.MDStore;
@@ -99,6 +101,12 @@ public class MDStoreController {
 		mdstoreCurrentVersionRepository.deleteById(mdId);
 		mdstoreVersionRepository.deleteByMdstore(mdId);
 		mdstoreRepository.deleteById(mdId);
+	}
+
+	@Transactional
+	@RequestMapping(value = "/mdstore/{mdId}/versions", method = RequestMethod.GET)
+	public List<MDStoreVersion> listVersions(@PathVariable final String mdId) throws MDStoreManagerException {
+		return Lists.newArrayList(mdstoreVersionRepository.findByMdstore(mdId));
 	}
 
 	@Transactional

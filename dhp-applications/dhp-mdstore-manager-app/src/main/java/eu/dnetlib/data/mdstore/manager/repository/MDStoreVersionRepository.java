@@ -14,4 +14,6 @@ public interface MDStoreVersionRepository extends JpaRepository<MDStoreVersion, 
 
 	int countByMdstoreAndReadCountGreaterThan(String id, int count);
 
+	Iterable<MDStoreVersion> findByMdstore(String mdId);
+
 }
