@@ -8,6 +8,7 @@ CREATE TABLE mdstores (
 	format          text,
 	layout          text,
 	interpretation  text,
+	datasource_name text,
 	datasource_id   text,
 	api_id          text
 );
@@ -31,6 +32,7 @@ CREATE VIEW mdstores_with_info AS SELECT
 	md.format           AS format,
 	md.layout           AS layout,
 	md.interpretation   AS interpretation,
+	md.datasource_name  AS datasource_name,
 	md.datasource_id    AS datasource_id,
 	md.api_id           AS api_id, 
 	cv.current_version  AS current_version,
@@ -46,6 +48,7 @@ GROUP BY md.id,
 	md.format,
 	md.layout,
 	md.interpretation,
+	md.datasource_name,
 	md.datasource_id,
 	md.api_id, 
 	cv.current_version,

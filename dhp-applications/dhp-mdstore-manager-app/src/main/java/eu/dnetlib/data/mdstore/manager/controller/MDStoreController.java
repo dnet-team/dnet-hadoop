@@ -77,15 +77,21 @@ public class MDStoreController {
 			@ApiParam("mdstore format") @PathVariable final String format,
 			@ApiParam("mdstore layout") @PathVariable final String layout,
 			@ApiParam("mdstore interpretation") @PathVariable final String interpretation,
+			@ApiParam("datasource name") @RequestParam(required = false) final String dsName,
 			@ApiParam("datasource id") @RequestParam(required = false) final String dsId,
 			@ApiParam("api id") @RequestParam(required = false) final String apiId) throws MDStoreManagerException {
-		final String id = _createMDStore(format, layout, interpretation, dsId, apiId);
+		final String id = _createMDStore(format, layout, interpretation, dsName, dsId, apiId);
 		return mdstoreWithInfoRepository.findById(id).orElseThrow(() -> new MDStoreManagerException("MDStore not found"));
 	}
 
 	@Transactional
-	private String _createMDStore(final String format, final String layout, final String interpretation, final String dsId, final String apiId) {
-		final MDStore md = MDStore.newInstance(dsId, apiId, format, layout, interpretation);
+	private String _createMDStore(final String format,
+			final String layout,
+			final String interpretation,
+			final String dsName,
+			final String dsId,
+			final String apiId) {
+		final MDStore md = MDStore.newInstance(format, layout, interpretation, dsName, dsId, apiId);
 		mdstoreRepository.save(md);
 
 		final MDStoreVersion v = MDStoreVersion.newInstance(md.getId(), false);
@@ -133,7 +139,7 @@ public class MDStoreController {
 	@ApiOperation(value = "Promote a preliminary version to current")
 	@RequestMapping(value = "/version/{versionId}/commit/{size}", method = RequestMethod.GET)
 	public void commitVersion(@ApiParam("the id of the version that will be promoted to the current version") @PathVariable final String versionId,
-			@ApiParam("the size of the new current mdstore") @PathVariable final int size) throws NoContentException {
+			@ApiParam(value = "the size of the new current mdstore") @PathVariable final long size) throws NoContentException {
 		final MDStoreVersion v = mdstoreVersionRepository.findById(versionId).orElseThrow(() -> new NoContentException("Invalid version: " + versionId));
 		mdstoreCurrentVersionRepository.save(MDStoreCurrentVersion.newInstance(v));
 		v.setWriting(false);

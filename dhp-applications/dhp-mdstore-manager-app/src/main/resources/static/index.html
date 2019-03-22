@@ -17,27 +17,32 @@
 			<thead>
 				<tr>
 					<th>ID</th>
-					<th>Format</th>
-					<th>Layout</th>
-					<th>Interpretation</th>
-					<th>Datasource ID</th>
-					<th>Api ID</th>
-					<th>Current Version ID</th>
-					<th>Last Update</th>
-					<th>Size</th>
+					<th>Format / Layout / Interpretation</th>
+					<th>Datasource</th>
+					<th>Current Version</th>
+					<th class="text-right">All versions</th>
+					<th class="text-center">Last Update</th>
+					<th class="text-right">Size</th>
 				</tr>
 			</thead>
 			<tbody>
 				<tr ng-repeat="md in mdstores">
 					<td>{{md.id}}</td>
-					<td>{{md.format}}</td>
-					<td>{{md.layout}}</td>
-					<td>{{md.interpretation}}</td>
-					<td>{{md.datasourceId}}</td>
+					<td>{{md.format}} / {{md.layout}} / {{md.interpretation}}</td>
+					<td>
+						<span ng-if="md.datasourceName">
+							{{md.datasourceName}}<br />
+							<small>
+								<b>id: </b>{{md.datasourceId}}
+								<b>api: </b>{{md.apiId}}
+							</small>
+						</span>
+					</td>
 					<td>{{md.apiId}}</td>
 					<td>{{md.currentVersion}}</td>
-					<td>{{md.lastUpdate}}</td>
-					<td>{{md.size}}</td>
+					<td class="text-right">{{md.numberOfVersions}}</td>
+					<td class="text-center">{{md.lastUpdate}}</td>
+					<td class="text-right">{{md.size}}</td>
 				</tr>
 			</tbody>
 		</table>

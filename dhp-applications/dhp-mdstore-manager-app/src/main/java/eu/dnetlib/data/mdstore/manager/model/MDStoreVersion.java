@@ -30,14 +30,14 @@ public class MDStoreVersion implements Serializable {
 	private boolean writing;
 
 	@Column(name = "readcount")
-	private int readCount;
+	private int readCount = 0;
 
 	@Column(name = "lastupdate")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date lastUpdate;
 
 	@Column(name = "size")
-	private long size;
+	private long size = 0;
 
 	public static MDStoreVersion newInstance(final String mdId, final boolean writing) {
 		final MDStoreVersion t = new MDStoreVersion();

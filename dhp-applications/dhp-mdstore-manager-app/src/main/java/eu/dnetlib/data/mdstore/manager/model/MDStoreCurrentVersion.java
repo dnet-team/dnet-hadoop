@@ -27,7 +27,7 @@ public class MDStoreCurrentVersion implements Serializable {
 		return mdstore;
 	}
 
-	public void setMdstore(String mdstore) {
+	public void setMdstore(final String mdstore) {
 		this.mdstore = mdstore;
 	}
 
@@ -35,12 +35,8 @@ public class MDStoreCurrentVersion implements Serializable {
 		return currentVersion;
 	}
 
-	public void setCurrentVersion(String currentVersion) {
+	public void setCurrentVersion(final String currentVersion) {
 		this.currentVersion = currentVersion;
-	}
-
-	public static long getSerialversionuid() {
-		return serialVersionUID;
 	}
 
 	public static MDStoreCurrentVersion newInstance(final String mdId, final String versionId) {

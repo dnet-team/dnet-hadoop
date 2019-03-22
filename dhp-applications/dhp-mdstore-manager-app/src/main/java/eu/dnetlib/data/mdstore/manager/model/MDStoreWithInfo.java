@@ -32,6 +32,9 @@ public class MDStoreWithInfo implements Serializable {
 	@Column(name = "interpretation")
 	private String interpretation;
 
+	@Column(name = "datasource_name")
+	private String datasourceName;
+
 	@Column(name = "datasource_id")
 	private String datasourceId;
 
@@ -46,10 +49,10 @@ public class MDStoreWithInfo implements Serializable {
 	private Date lastUpdate;
 
 	@Column(name = "size")
-	private long size;
+	private long size = 0;
 
 	@Column(name = "n_versions")
-	private long numberOfVersions;
+	private long numberOfVersions = 0;
 
 	public String getId() {
 		return id;
@@ -81,6 +84,14 @@ public class MDStoreWithInfo implements Serializable {
 
 	public void setInterpretation(final String interpretation) {
 		this.interpretation = interpretation;
+	}
+
+	public String getDatasourceName() {
+		return datasourceName;
+	}
+
+	public void setDatasourceName(final String datasourceName) {
+		this.datasourceName = datasourceName;
 	}
 
 	public String getDatasourceId() {
@@ -130,4 +141,5 @@ public class MDStoreWithInfo implements Serializable {
 	public void setNumberOfVersions(final long numberOfVersions) {
 		this.numberOfVersions = numberOfVersions;
 	}
+
 }
