@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<title>Metadata Store Manager</title>
+		<link rel="stylesheet" href="./css/bootstrap.min.css" />
+		<link rel="stylesheet" href="./css/bootstrap-theme.min.css" />
+		<script src="./js/jquery-1.12.3.min.js"></script>
+		<script src="./js/bootstrap.min.js"></script>
+		<script src="./js/angular.min.js"></script>
+		<script src="./js/mdstoremanager.js"></script>
+	</head>
+	
+	<body ng-app="mdstoreManagerApp" ng-controller="mdstoreManagerController">
+	
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<th>ID</th>
+					<th>Format</th>
+					<th>Layout</th>
+					<th>Interpretation</th>
+					<th>Datasource ID</th>
+					<th>Api ID</th>
+					<th>Current Version ID</th>
+					<th>Last Update</th>
+					<th>Size</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat="md in mdstores">
+					<td>{{md.id}}</td>
+					<td>{{md.format}}</td>
+					<td>{{md.layout}}</td>
+					<td>{{md.interpretation}}</td>
+					<td>{{md.datasourceId}}</td>
+					<td>{{md.apiId}}</td>
+					<td>{{md.currentVersion}}</td>
+					<td>{{md.lastUpdate}}</td>
+					<td>{{md.size}}</td>
+				</tr>
+			</tbody>
+		</table>
+	</body>
+</html>
