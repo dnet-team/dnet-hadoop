@@ -18,7 +18,7 @@ CREATE TABLE mdstore_versions (
 	writing         boolean,
 	readcount       int,
 	lastupdate      timestamp,
-	size            int
+	size            bigint
 );
 
 CREATE TABLE mdstore_current_versions (

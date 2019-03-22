@@ -46,7 +46,7 @@ public class MDStoreWithInfo implements Serializable {
 	private Date lastUpdate;
 
 	@Column(name = "size")
-	private int size;
+	private long size;
 
 	@Column(name = "n_versions")
 	private long numberOfVersions;
@@ -115,11 +115,11 @@ public class MDStoreWithInfo implements Serializable {
 		this.lastUpdate = lastUpdate;
 	}
 
-	public int getSize() {
+	public long getSize() {
 		return size;
 	}
 
-	public void setSize(final int size) {
+	public void setSize(final long size) {
 		this.size = size;
 	}
 
