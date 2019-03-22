@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.google.common.collect.Lists;
+
 import eu.dnetlib.data.mdstore.manager.exceptions.MDStoreManagerException;
 import eu.dnetlib.data.mdstore.manager.exceptions.NoContentException;
 import eu.dnetlib.data.mdstore.manager.model.MDStore;
@@ -25,9 +27,13 @@ import eu.dnetlib.data.mdstore.manager.repository.MDStoreCurrentVersionRepositor
 import eu.dnetlib.data.mdstore.manager.repository.MDStoreRepository;
 import eu.dnetlib.data.mdstore.manager.repository.MDStoreVersionRepository;
 import eu.dnetlib.data.mdstore.manager.repository.MDStoreWithInfoRepository;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 
 @RestController
 @RequestMapping("/mdstores")
+@Api(tags = { "Metadata Stores" })
 public class MDStoreController {
 
 	@Autowired
@@ -41,33 +47,38 @@ public class MDStoreController {
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
+	@ApiOperation(value = "Return all the mdstores")
 	@RequestMapping(value = "/", method = RequestMethod.GET)
-	public Iterable<MDStoreWithInfo> find() {
-		return mdstoreWithInfoRepository.findAll();
+	public List<MDStoreWithInfo> find() {
+		return Lists.newArrayList(mdstoreWithInfoRepository.findAll());
 	}
 
+	@ApiOperation(value = "Return all the mdstore identifiers")
 	@RequestMapping(value = "/ids", method = RequestMethod.GET)
 	public List<String> findIdentifiers() {
 		return mdstoreRepository.findAll().stream().map(MDStore::getId).collect(Collectors.toList());
 	}
 
+	@ApiOperation(value = "Return a mdstores by id")
 	@RequestMapping(value = "/mdstore/{mdId}", method = RequestMethod.GET)
-	public MDStoreWithInfo get(@PathVariable final String mdId) throws NoContentException {
+	public MDStoreWithInfo get(@ApiParam("the mdstore identifier") @PathVariable final String mdId) throws NoContentException {
 		return mdstoreWithInfoRepository.findById(mdId).orElseThrow(() -> new NoContentException("Missing mdstore: " + mdId));
 	}
 
+	@ApiOperation(value = "Return the number of mdstores")
 	@RequestMapping(value = "/count", method = RequestMethod.GET)
 	public long count() {
 		return mdstoreRepository.count();
 	}
 
+	@ApiOperation(value = "Create a new mdstore")
 	@RequestMapping(value = "/new/{format}/{layout}/{interpretation}", method = RequestMethod.PUT)
 	public MDStoreWithInfo createMDStore(
-			@PathVariable final String format,
-			@PathVariable final String layout,
-			@PathVariable final String interpretation,
-			@RequestParam(required = false) final String dsId,
-			@RequestParam(required = false) final String apiId) throws MDStoreManagerException {
+			@ApiParam("mdstore format") @PathVariable final String format,
+			@ApiParam("mdstore layout") @PathVariable final String layout,
+			@ApiParam("mdstore interpretation") @PathVariable final String interpretation,
+			@ApiParam("datasource id") @RequestParam(required = false) final String dsId,
+			@ApiParam("api id") @RequestParam(required = false) final String apiId) throws MDStoreManagerException {
 		final String id = _createMDStore(format, layout, interpretation, dsId, apiId);
 		return mdstoreWithInfoRepository.findById(id).orElseThrow(() -> new MDStoreManagerException("MDStore not found"));
 	}
@@ -86,8 +97,9 @@ public class MDStoreController {
 	}
 
 	@Transactional
+	@ApiOperation(value = "Delete a mdstore by id")
 	@RequestMapping(value = "/mdstore/{mdId}", method = RequestMethod.DELETE)
-	public void delete(@PathVariable final String mdId) throws MDStoreManagerException {
+	public void delete(@ApiParam("the id of the mdstore that will be deleted") @PathVariable final String mdId) throws MDStoreManagerException {
 		if (!mdstoreRepository.existsById(mdId)) { throw new NoContentException("On delete MDStore not found " + "[" + mdId + "]"); }
 
 		if (mdstoreVersionRepository.countByMdstoreAndReadCountGreaterThan(mdId,
@@ -102,16 +114,19 @@ public class MDStoreController {
 	}
 
 	@Transactional
+	@ApiOperation(value = "Create a new preliminary version of a mdstore")
 	@RequestMapping(value = "/mdstore/{mdId}/newVersion", method = RequestMethod.GET)
-	public MDStoreVersion prepareNewVersion1(@PathVariable final String mdId) {
+	public MDStoreVersion prepareNewVersion(@ApiParam("the id of the mdstore for which will be created a new version") @PathVariable final String mdId) {
 		final MDStoreVersion v = MDStoreVersion.newInstance(mdId, true);
 		mdstoreVersionRepository.save(v);
 		return v;
 	}
 
 	@Transactional
+	@ApiOperation(value = "Promote a preliminary version to current")
 	@RequestMapping(value = "/version/{versionId}/commit/{size}", method = RequestMethod.GET)
-	public void commitVersion(@PathVariable final String versionId, @PathVariable final int size) throws NoContentException {
+	public void commitVersion(@ApiParam("the id of the version that will be promoted to the current version") @PathVariable final String versionId,
+			@ApiParam("the size of the new current mdstore") @PathVariable final int size) throws NoContentException {
 		final MDStoreVersion v = mdstoreVersionRepository.findById(versionId).orElseThrow(() -> new NoContentException("Invalid version: " + versionId));
 		mdstoreCurrentVersionRepository.save(MDStoreCurrentVersion.newInstance(v));
 		v.setWriting(false);
@@ -120,6 +135,7 @@ public class MDStoreController {
 		mdstoreVersionRepository.save(v);
 	}
 
+	@ApiOperation(value = "Return all the expired versions of all the mdstores")
 	@RequestMapping(value = "/versions/expired", method = RequestMethod.GET)
 	public List<String> listExpiredVersions() {
 		return jdbcTemplate.queryForList(
@@ -128,26 +144,35 @@ public class MDStoreController {
 	}
 
 	@Transactional
+	@ApiOperation(value = "Delete a mdstore version")
 	@RequestMapping(value = "/version/{versionId}", method = RequestMethod.DELETE)
-	public void deleteVersion(@PathVariable final String versionId) throws MDStoreManagerException {
-		_deleteVersion(versionId);
+	public void deleteVersion(@ApiParam("the id of the version that has to be deleted") @PathVariable final String versionId,
+			@ApiParam("if true, the controls on writing and readcount values will be skipped") @RequestParam(required = false, defaultValue = "false") final boolean force)
+			throws MDStoreManagerException {
+		_deleteVersion(versionId, force);
 	}
 
 	@Transactional
+	@ApiOperation(value = "Delete multiple mdstore versions")
 	@RequestMapping(value = "/versions/deleteList", method = RequestMethod.POST)
-	public void deleteVersions(@RequestBody final List<String> versions) throws MDStoreManagerException {
+	public void deleteVersions(@ApiParam("the list of ids of the versions that have to be deleted") @RequestBody final List<String> versions,
+			@ApiParam("if true, the controls on writing and readcount values will be skipped") @RequestParam(required = false, defaultValue = "false") final boolean force)
+			throws MDStoreManagerException {
 		for (final String v : versions) {
-			_deleteVersion(v);
+			_deleteVersion(v, force);
 		}
 	}
 
-	private void _deleteVersion(final String versionId) throws MDStoreManagerException {
+	private void _deleteVersion(final String versionId, final boolean force) throws MDStoreManagerException {
 		final MDStoreVersion v = mdstoreVersionRepository.findById(versionId).orElseThrow(() -> new MDStoreManagerException("Version not found"));
 
-		if (v.isWriting()) { throw new MDStoreManagerException("I cannot delete this version because it is in write mode"); }
-		if (v.getReadCount() > 0) { throw new MDStoreManagerException("I cannot delete this version because it is in read mode"); }
 		if (mdstoreCurrentVersionRepository
 				.countByCurrentVersion(versionId) > 0) { throw new MDStoreManagerException("I cannot delete this version because it is the current version"); }
+
+		if (!force) {
+			if (v.isWriting()) { throw new MDStoreManagerException("I cannot delete this version because it is in write mode"); }
+			if (v.getReadCount() > 0) { throw new MDStoreManagerException("I cannot delete this version because it is in read mode"); }
+		}
 
 		mdstoreVersionRepository.delete(v);
 	}

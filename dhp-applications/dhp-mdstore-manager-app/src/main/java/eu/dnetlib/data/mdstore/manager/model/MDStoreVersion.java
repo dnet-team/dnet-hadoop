@@ -37,9 +37,9 @@ public class MDStoreVersion implements Serializable {
 	private Date lastUpdate;
 
 	@Column(name = "size")
-	private int size;
+	private long size;
 
-	public static MDStoreVersion newInstance(final String mdId, boolean writing) {
+	public static MDStoreVersion newInstance(final String mdId, final boolean writing) {
 		final MDStoreVersion t = new MDStoreVersion();
 		t.setId(mdId + "-" + new Date().getTime());
 		t.setMdstore(mdId);
@@ -54,7 +54,7 @@ public class MDStoreVersion implements Serializable {
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setId(final String id) {
 		this.id = id;
 	}
 
@@ -62,7 +62,7 @@ public class MDStoreVersion implements Serializable {
 		return mdstore;
 	}
 
-	public void setMdstore(String mdstore) {
+	public void setMdstore(final String mdstore) {
 		this.mdstore = mdstore;
 	}
 
@@ -70,7 +70,7 @@ public class MDStoreVersion implements Serializable {
 		return writing;
 	}
 
-	public void setWriting(boolean writing) {
+	public void setWriting(final boolean writing) {
 		this.writing = writing;
 	}
 
@@ -78,7 +78,7 @@ public class MDStoreVersion implements Serializable {
 		return readCount;
 	}
 
-	public void setReadCount(int readCount) {
+	public void setReadCount(final int readCount) {
 		this.readCount = readCount;
 	}
 
@@ -86,15 +86,15 @@ public class MDStoreVersion implements Serializable {
 		return lastUpdate;
 	}
 
-	public void setLastUpdate(Date lastUpdate) {
+	public void setLastUpdate(final Date lastUpdate) {
 		this.lastUpdate = lastUpdate;
 	}
 
-	public int getSize() {
+	public long getSize() {
 		return size;
 	}
 
-	public void setSize(int size) {
+	public void setSize(final long size) {
 		this.size = size;
 	}
 
