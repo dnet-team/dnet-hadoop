@@ -3,6 +3,7 @@ package eu.dnetlib.dhp.collection;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.dnetlib.dhp.model.mdstore.MetadataRecord;
 import eu.dnetlib.dhp.model.mdstore.Provenance;
+import org.apache.commons.cli.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
@@ -19,6 +20,7 @@ import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
 
 import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 public class GenerateNativeStoreSparkJob {
@@ -30,7 +32,7 @@ public class GenerateNativeStoreSparkJob {
             totalItems.add(1);
         try {
             SAXReader reader = new SAXReader();
-            Document document = reader.read(new ByteArrayInputStream(input.getBytes("UTF-8")));
+            Document document = reader.read(new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8)));
             Node node = document.selectSingleNode(xpath);
             final String originalIdentifier = node.getText();
             if (StringUtils.isBlank(originalIdentifier)) {
@@ -49,22 +51,64 @@ public class GenerateNativeStoreSparkJob {
     }
 
 
+
+
+
     public static void main(String[] args) throws Exception {
 
-        if (args == null || args.length != 6)
-            //TODO Create a DHPWFException
-            throw new Exception("unexpected number of parameters ");
+        Options options = new Options();
+        options.addOption(Option.builder("e")
+                .longOpt("encoding")
+                .required(true)
+                .desc("the encoding type should be xml or json")
+                .hasArg() // This option has an argument.
+                .build());
+        options.addOption(Option.builder("d")
+                .longOpt("dateOfCollection")
+                .required(true)
+                .desc("the date of collection")
+                .hasArg() // This option has an argument.
+                .build());
 
-        final String encoding = args[0];
-        final long dateOfCollection = Long.valueOf(args[1]);
-        final String jsonProvenance = args[2];
+        options.addOption(Option.builder("p")
+                .longOpt("provenance")
+                .required(true)
+                .desc("the json Provenance information")
+                .hasArg() // This option has an argument.
+                .build());
+
+        options.addOption(Option.builder("x")
+                .longOpt("xpath")
+                .required(true)
+                .desc("xpath of the identifier")
+                .hasArg() // This option has an argument.
+                .build());
+
+        options.addOption(Option.builder("i")
+                .longOpt("input")
+                .required(true)
+                .desc("input path of the sequence file")
+                .hasArg() // This option has an argument.
+                .build());
+        options.addOption(Option.builder("o")
+                .longOpt("output")
+                .required(true)
+                .desc("output path of the mdstore")
+                .hasArg()
+                .build());
+
+
+        CommandLineParser parser = new DefaultParser();
+        CommandLine cmd = parser.parse( options, args);
+
+        final String encoding = cmd.getOptionValue("e");
+        final long dateOfCollection = new Long(cmd.getOptionValue("d"));
+        final String jsonProvenance = cmd.getOptionValue("p");
         final ObjectMapper jsonMapper = new ObjectMapper();
         final Provenance provenance = jsonMapper.readValue(jsonProvenance, Provenance.class);
-        final String xpath = args[3];
-        final String inputPath = args[4];
-        final String outputPath = args[5];
-
-
+        final String xpath = cmd.getOptionValue("x");
+        final String inputPath = cmd.getOptionValue("i");
+        final String outputPath = cmd.getOptionValue("o");
 
         final SparkSession spark = SparkSession
                 .builder()
@@ -85,21 +129,11 @@ public class GenerateNativeStoreSparkJob {
 
         final Encoder<MetadataRecord> encoder = Encoders.bean(MetadataRecord.class);
         final Dataset<MetadataRecord> mdstore = spark.createDataset(mappeRDD.rdd(), encoder);
-
-
         final LongAccumulator mdStoreRecords = sc.sc().longAccumulator("MDStoreRecords");
         mdStoreRecords.add(mdstore.count());
         System.out.println("totalItems.value() = " + totalItems.value());
         System.out.println("invalidRecords = " + invalidRecords.value());
         System.out.println("mdstoreRecords.value() = " + mdStoreRecords.value());
-
         mdstore.write().format("parquet").save(outputPath);
-
-
-
-
-
-
-
     }
 }
