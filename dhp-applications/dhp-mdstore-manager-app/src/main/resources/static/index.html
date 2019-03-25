@@ -11,6 +11,12 @@
 		<script src="./js/mdstoremanager.js"></script>
 	</head>
 	
+	<style>
+		td {
+			vertical-align: middle !important;
+		}
+	</style>
+	
 	<body ng-app="mdstoreManagerApp" ng-controller="mdstoreManagerController">
 
 		<div class="row">	
@@ -18,22 +24,34 @@
 				<h1>Metadata Store Manager</h1>
 		
 				<hr />
+				
+				<div>
+					<a href="/doc" target="_blank">API documentation</a>
+				</div>
 
-				<table class="table table-striped">
+				<hr />
+
+				
+					
+				<table class="table table-striped small">
 					<thead>
 						<tr>
-							<th class="col-xs-3">ID</th>
+							<th class="col-xs-4">ID</th>
 							<th class="col-xs-2">Format / Layout / Interpretation</th>
 							<th class="col-xs-3">Datasource</th>
 							<th class="col-xs-1 text-center">Last Update</th>
 							<th class="col-xs-1 text-right">Size</th>
 							<th class="col-xs-1 text-right">Versions</th>
-							<th class="col-xs-1 text-right">Operations</th>
 						</tr>
 					</thead>
 					<tbody>
+						<tr>
+							<td colspan="6">
+								<a href="javascript:void(0)" data-toggle="modal" data-target="#newMdstoreModal">create a new mdstore</a>
+							</td>
+						</tr>
 						<tr ng-repeat="md in mdstores">
-							<td>{{md.id}}</td>
+							<td><button class="btn btn-xs btn-danger" ng-click="deleteMdstore(md.id)">delete</button> {{md.id}}</td>
 							<td>{{md.format}} / {{md.layout}} / {{md.interpretation}}</td>
 							<td>
 								<span ng-if="md.datasourceName">
@@ -47,17 +65,59 @@
 							<td class="text-center" title="{{md.lastUpdate}}">{{md.lastUpdate | date:"MMM dd, yyyy 'at' HH:mm"}}</td>
 							<td class="text-right">{{md.size}}</td>
 							<td class="text-right">
-								<a href="javascript:void(0)" ng-click="listVersions(md.id, md.currentVersion)" data-toggle="modal" data-target="#versionsModal" title="Current: {{md.currentVersion}}">{{md.numberOfVersions}} version(s)</a>
+								<a href="javascript:void(0)" ng-click="listVersions(md.id, md.currentVersion)" data-toggle="modal" data-target="#versionsModal" title="Current: {{md.currentVersion}}">{{md.numberOfVersions}} version(s)</a> /
+								<a href="javascript:void(0)" ng-click="prepareVersion(md.id, md.currentVersion)" data-toggle="modal" data-target="#versionsModal">new</a>
 							</td>
-							<td class="text-right">
-								<button class="btn btn-sm btn-primary" ng-click="prepareVersion(md.id, md.currentVersion)" data-toggle="modal" data-target="#versionsModal">new version</button>
-								<button class="btn btn-sm btn-danger" ng-click="deleteMdstore(md.id)">delete</button>
-							</td>
+							
 						</tr>
 					</tbody>
 				</table>
 			</div>
 		</div>
+		
+		<div class="modal fade" tabindex="-1" id="newMdstoreModal">
+			<div class="modal-dialog modal-lg">
+	 			<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+						<h4 class="modal-title">New Mdstore</h4>
+					</div>
+					<div class="modal-body">
+						<form>
+							<div class="form-group">
+								<label>Format</label>
+								<input type="text" class="form-control" placeholder="oai_dc" ng-model="newMdFormat" />
+							</div>
+							<div class="form-group">
+								<label>Layout</label>
+								<input type="text" class="form-control" placeholder="store" ng-model="newMdLayout" />
+							</div>
+							<div class="form-group">
+								<label>Interpretation</label>
+								<input type="text" class="form-control" placeholder="native" ng-model="newMdInterpretation" />
+							</div>
+							<div class="form-group">
+								<label>Datasource Name</label>
+								<input type="text" class="form-control" placeholder="" ng-model="newMdDsName" />
+							</div>
+							<div class="form-group">
+								<label>Datasource ID</label>
+								<input type="text" class="form-control" placeholder="" ng-model="newMdDsId" />
+							</div>
+							<div class="form-group">
+								<label>Datasource API</label>
+								<input type="text" class="form-control" placeholder="" ng-model="newMdApiId" />
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+						<button type="submit" class="btn btn-primary" data-dismiss="modal" ng-click="newMdstore(newMdFormat, newMdLayout, newMdInterpretation, newMdDsName, newMdDsId, newMdApiId)">Submit</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		
 
 		<div class="modal fade" tabindex="-1" id="versionsModal">
 			<div class="modal-dialog modal-lg">
@@ -72,30 +132,28 @@
 								<input type="checkbox" ng-model="forceVersionDelete" /> Force delete 
 							</label>
 						</div>
-						<small>
-							<table class="table table-condensed">
-								<thead>
-									<tr>
-										<th>ID</th>
-										<th class="text-center">Read Count</th>
-										<th class="text-center">Last Update</th>
-										<th class="text-right">Size</th>
-									</tr>
-								</thead>
-								<tbody>
-									<tr ng-repeat="v in versions">
-										<td ng-class="{'text-success': v.current}"><span class="glyphicon glyphicon-pencil" ng-if="v.writing" title="writing..."></span> {{v.id}}</td>
-										<td class="text-center">{{v.readCount}}</td>
-										<td class="text-center" title="{{v.lastUpdate}}">{{v.lastUpdate | date:"MMM dd, yyyy 'at' HH:mm"}}</td>
-										<td class="text-right">{{v.size}}</td>
-										<td class="text-right">
-											<button class="btn btn-sm btn-primary" ng-if="v.writing" ng-click="commitVersion(v.id)">commit</button>
-											<button class="btn btn-sm btn-danger" ng-disabled="v.current" ng-click="deleteVersion(v.id, forceVersionDelete)">delete</button>
-										</td>
-									</tr>
-								</tbody>
-							</table>
-						</small>
+						<table class="table table-condensed small">
+							<thead>
+								<tr>
+									<th>ID</th>
+									<th class="text-center">Read Count</th>
+									<th class="text-center">Last Update</th>
+									<th class="text-right">Size</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr ng-repeat="v in versions">
+									<td ng-class="{'text-success': v.current}"><span class="glyphicon glyphicon-pencil" ng-if="v.writing" title="writing..."></span> {{v.id}}</td>
+									<td class="text-center">{{v.readCount}}</td>
+									<td class="text-center" title="{{v.lastUpdate}}">{{v.lastUpdate | date:"MMM dd, yyyy 'at' HH:mm"}}</td>
+									<td class="text-right">{{v.size}}</td>
+									<td class="text-right">
+										<button class="btn btn-sm btn-primary" ng-if="v.writing" ng-click="commitVersion(v.id)">commit</button>
+										<button class="btn btn-sm btn-danger" ng-disabled="v.current" ng-click="deleteVersion(v.id, forceVersionDelete)">delete</button>
+									</td>
+								</tr>
+							</tbody>
+						</table>
 					</div>
 					<div class="modal-footer">
 						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
