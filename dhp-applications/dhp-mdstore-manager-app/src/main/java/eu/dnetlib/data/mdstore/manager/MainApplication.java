@@ -1,6 +1,5 @@
 package eu.dnetlib.data.mdstore.manager;
 
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
@@ -33,7 +32,7 @@ public class MainApplication {
 		return new Docket(DocumentationType.SWAGGER_2)
 				.select()
 				.apis(RequestHandlerSelectors.any())
-				.paths(p -> p.startsWith("/api/"))
+				.paths(p -> p.startsWith("/mdstores"))
 				.build().apiInfo(new ApiInfoBuilder()
 						.title("MDStore Manager APIs")
 						.description("APIs documentation")
@@ -44,6 +43,5 @@ public class MainApplication {
 						.build());
 
 	}
-
 
 }

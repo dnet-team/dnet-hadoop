@@ -27,22 +27,23 @@ public class MDStore implements Serializable {
 	@Column(name = "layout")
 	private String layout;
 
-
 	@Column(name = "interpretation")
 	private String interpretation;
+
+	@Column(name = "datasource_name")
+	private String datasourceName;
 
 	@Column(name = "datasource_id")
 	private String datasourceId;
 
 	@Column(name = "api_id")
-	private String apiId ;
-
+	private String apiId;
 
 	public String getId() {
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setId(final String id) {
 		this.id = id;
 	}
 
@@ -50,7 +51,7 @@ public class MDStore implements Serializable {
 		return format;
 	}
 
-	public void setFormat(String format) {
+	public void setFormat(final String format) {
 		this.format = format;
 	}
 
@@ -58,7 +59,7 @@ public class MDStore implements Serializable {
 		return layout;
 	}
 
-	public void setLayout(String layout) {
+	public void setLayout(final String layout) {
 		this.layout = layout;
 	}
 
@@ -66,15 +67,23 @@ public class MDStore implements Serializable {
 		return interpretation;
 	}
 
-	public void setInterpretation(String interpretation) {
+	public void setInterpretation(final String interpretation) {
 		this.interpretation = interpretation;
+	}
+
+	public String getDatasourceName() {
+		return datasourceName;
+	}
+
+	public void setDatasourceName(final String datasourceName) {
+		this.datasourceName = datasourceName;
 	}
 
 	public String getDatasourceId() {
 		return datasourceId;
 	}
 
-	public void setDatasourceId(String datasourceId) {
+	public void setDatasourceId(final String datasourceId) {
 		this.datasourceId = datasourceId;
 	}
 
@@ -82,27 +91,29 @@ public class MDStore implements Serializable {
 		return apiId;
 	}
 
-	public void setApiId(String apiId) {
+	public void setApiId(final String apiId) {
 		this.apiId = apiId;
 	}
 
 	public static MDStore newInstance(final String format, final String layout, final String interpretation) {
-		return newInstance(null, null, format, layout, interpretation);
+		return newInstance(format, layout, interpretation, null, null, null);
 	}
 
-	public static MDStore newInstance(final String dsId, final String apiId, final String format, final String layout, final String interpretation) {
+	public static MDStore newInstance(final String format,
+			final String layout,
+			final String interpretation,
+			final String dsName,
+			final String dsId,
+			final String apiId) {
 		final MDStore md = new MDStore();
 		md.setId("md-" + UUID.randomUUID());
-		md.setDatasourceId(dsId);
-		md.setApiId(apiId);
 		md.setFormat(format);
 		md.setLayout(layout);
 		md.setInterpretation(interpretation);
+		md.setDatasourceName(dsName);
+		md.setDatasourceId(dsId);
+		md.setApiId(apiId);
 		return md;
 	}
-
-
-
-
 
 }

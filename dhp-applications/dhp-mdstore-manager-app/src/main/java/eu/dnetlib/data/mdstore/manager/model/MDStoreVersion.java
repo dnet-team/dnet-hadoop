@@ -11,8 +11,9 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@Table(name = "transactions")
-public class Transaction implements Serializable{
+@Table(name = "mdstore_versions")
+public class MDStoreVersion implements Serializable {
+
 	/**
 	 *
 	 */
@@ -25,27 +26,35 @@ public class Transaction implements Serializable{
 	@Column(name = "mdstore")
 	private String mdstore;
 
-	@Column(name = "current")
-	private boolean current;
-
-	@Column(name = "active")
-	private boolean active;
+	@Column(name = "writing")
+	private boolean writing;
 
 	@Column(name = "readcount")
-	private int readCount;
+	private int readCount = 0;
 
 	@Column(name = "lastupdate")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date lastUpdate;
 
 	@Column(name = "size")
-	private int size;
+	private long size = 0;
+
+	public static MDStoreVersion newInstance(final String mdId, final boolean writing) {
+		final MDStoreVersion t = new MDStoreVersion();
+		t.setId(mdId + "-" + new Date().getTime());
+		t.setMdstore(mdId);
+		t.setLastUpdate(null);
+		t.setWriting(writing);
+		t.setReadCount(0);
+		t.setSize(0);
+		return t;
+	}
 
 	public String getId() {
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setId(final String id) {
 		this.id = id;
 	}
 
@@ -53,31 +62,23 @@ public class Transaction implements Serializable{
 		return mdstore;
 	}
 
-	public void setMdstore(String mdstore) {
+	public void setMdstore(final String mdstore) {
 		this.mdstore = mdstore;
 	}
 
-	public boolean isCurrent() {
-		return current;
+	public boolean isWriting() {
+		return writing;
 	}
 
-	public void setCurrent(boolean current) {
-		this.current = current;
-	}
-
-	public boolean isActive() {
-		return active;
-	}
-
-	public void setActive(boolean active) {
-		this.active = active;
+	public void setWriting(final boolean writing) {
+		this.writing = writing;
 	}
 
 	public int getReadCount() {
 		return readCount;
 	}
 
-	public void setReadCount(int readCount) {
+	public void setReadCount(final int readCount) {
 		this.readCount = readCount;
 	}
 
@@ -85,30 +86,16 @@ public class Transaction implements Serializable{
 		return lastUpdate;
 	}
 
-	public void setLastUpdate(Date lastUpdate) {
+	public void setLastUpdate(final Date lastUpdate) {
 		this.lastUpdate = lastUpdate;
 	}
 
-	public int getSize() {
+	public long getSize() {
 		return size;
 	}
 
-	public void setSize(int size) {
+	public void setSize(final long size) {
 		this.size = size;
 	}
-
-	public static Transaction newInstance(final String mdId) {
-		final Transaction t = new Transaction();
-		t.setId(mdId + "-" + new Date().getTime());
-		t.setMdstore(mdId);
-		t.setLastUpdate(null);
-		t.setActive(false);
-		t.setCurrent(false);
-		t.setReadCount(0);
-		t.setSize(0);
-		return t;
-	}
-
-
 
 }
