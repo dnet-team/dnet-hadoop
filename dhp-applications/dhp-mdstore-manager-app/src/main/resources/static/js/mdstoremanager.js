@@ -3,6 +3,9 @@ var app = angular.module('mdstoreManagerApp', []);
 app.controller('mdstoreManagerController', function($scope, $http) {
 	$scope.mdstores = [];
 	$scope.versions = [];
+	$scope.openMdstore = '';
+	$scope.openCurrentVersion = ''
+	
 	$scope.forceVersionDelete = false;
 	
 	$scope.reload = function() {
@@ -19,7 +22,6 @@ app.controller('mdstoreManagerController', function($scope, $http) {
 			url += '?dsName=' + encodeURIComponent(dsName) + '&dsId=' + encodeURIComponent(dsId) + '&apiId=' + encodeURIComponent(apiId);
 		}
 		$http.put(url).success(function(data) {
-			
 			$scope.reload();
 		}).error(function() {
 			alert("error");
@@ -29,7 +31,7 @@ app.controller('mdstoreManagerController', function($scope, $http) {
 	$scope.deleteMdstore = function(mdId) {
 		if (confirm("Are you sure ?")) {
 			$http.delete('/mdstores/mdstore/' + mdId).success(function(data) {
-				$scope.reload, 500;
+				$scope.reload();
 			}).error(function() {
 				alert("error");
 			});
@@ -50,15 +52,9 @@ app.controller('mdstoreManagerController', function($scope, $http) {
 		var size = parseInt(prompt("New Size", "0"));
 		if (size >= 0) {
 			$http.get("/mdstores/version/" + versionId + "/commit/" + size + '?' + $.now()).success(function(data) {
-				angular.forEach($scope.versions, function(value, key) {
-					if (value.id == versionId) {
-						value.current = true;
-						value.writing = false;
-						value.size = size;
-					} else {
-						value.current = false;
-					}
-				});
+				$scope.reload();
+				$scope.openCurrentVersion = versionId;
+				$scope.refreshVersions();
 			}).error(function() {
 				alert("error");
 			});
@@ -66,10 +62,16 @@ app.controller('mdstoreManagerController', function($scope, $http) {
 	};
 	
 	$scope.listVersions = function(mdId, current) {
+		$scope.openMdstore = mdId;
+		$scope.openCurrentVersion = current;
 		$scope.versions = [];
-		$http.get('/mdstores/mdstore/' + mdId + '/versions?' + $.now()).success(function(data) {
+		$scope.refreshVersions();
+	};
+	
+	$scope.refreshVersions = function() {
+		$http.get('/mdstores/mdstore/' + $scope.openMdstore + '/versions?' + $.now()).success(function(data) {
 			angular.forEach(data, function(value, key) {
-				value.current = (value.id == current);
+				value.current = (value.id == $scope.openCurrentVersion);
 			});
 			$scope.versions = data;
 		}).error(function() {
@@ -83,14 +85,8 @@ app.controller('mdstoreManagerController', function($scope, $http) {
 			if (force) { url += '?force=true'; }
 						
 			$http.delete(url).success(function(data) {
-				var nv = [];
-				angular.forEach($scope.versions, function(value, key) {
-					if (value.id != versionId) {
-						nv.push(value);
-					}
-				});
-				$scope.versions = nv;
 				$scope.reload();
+				$scope.refreshVersions();
 			}).error(function() {
 				alert("error");
 			});
