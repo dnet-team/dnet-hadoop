@@ -50,10 +50,6 @@ public class GenerateNativeStoreSparkJob {
         }
     }
 
-
-
-
-
     public static void main(String[] args) throws Exception {
 
         Options options = new Options();
@@ -113,7 +109,7 @@ public class GenerateNativeStoreSparkJob {
         final SparkSession spark = SparkSession
                 .builder()
                 .appName("GenerateNativeStoreSparkJob")
-                .master("yarn")
+                .master("local")
                 .getOrCreate();
 
         final JavaSparkContext sc = new JavaSparkContext(spark.sparkContext());

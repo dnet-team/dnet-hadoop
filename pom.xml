@@ -23,7 +23,7 @@
         <!--<module>dhp-build</module>-->
         <module>dhp-common</module>
         <module>dhp-workflows</module>
-	<module>dhp-applications</module>
+	    <module>dhp-applications</module>
     </modules>
 
     <issueManagement>
@@ -37,9 +37,9 @@
     </ciManagement>
 
     <scm>
-        <connection>scm:git:ssh://git@github.com/???</connection>
-        <developerConnection>scm:git:ssh://git@github.com/???.git</developerConnection>
-        <url>https://github.com/???</url>
+        <connection>scm:git:ssh://git@github.com/dnet-team/dnet-hadoop.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com:dnet-team/dnet-hadoop.git</developerConnection>
+        <url>https://github.com/dnet-team/dnet-hadoop</url>
         <tag>HEAD</tag>
     </scm>
 
@@ -135,22 +135,16 @@
                 <artifactId>commons-cli</artifactId>
                 <version>1.4</version>
             </dependency>
-
-
-
         </dependencies>
     </dependencyManagement>
-
 
     <build>
         <directory>target</directory>
         <outputDirectory>target/classes</outputDirectory>
         <finalName>${project.artifactId}-${project.version}</finalName>
         <testOutputDirectory>target/test-classes</testOutputDirectory>
-
         <pluginManagement>
             <plugins>
-
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
@@ -191,7 +185,6 @@
                         <redirectTestOutputToFile>true</redirectTestOutputToFile>
                     </configuration>
                 </plugin>
-
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
@@ -200,27 +193,21 @@
                         <detectLinks>true</detectLinks>
                     </configuration>
                 </plugin>
-
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-dependency-plugin</artifactId>
                     <version>3.0.0</version>
                 </plugin>
-
-
-
                 <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself. -->
             </plugins>
         </pluginManagement>
 
         <plugins>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-release-plugin</artifactId>
                 <version>2.5.3</version>
             </plugin>
-
         </plugins>
 
 

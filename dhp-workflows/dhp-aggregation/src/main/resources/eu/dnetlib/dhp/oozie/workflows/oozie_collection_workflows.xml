@@ -20,7 +20,7 @@
             <description>A json encoding of the Datasource Info</description>
         </property>
         <property>
-            <name>identifierPath</name>
+            <name>identifierXPath</name>
             <description>An xpath to retrieve the metadata idnentifier for the generation of DNet Identifier </description>
         </property>
 
