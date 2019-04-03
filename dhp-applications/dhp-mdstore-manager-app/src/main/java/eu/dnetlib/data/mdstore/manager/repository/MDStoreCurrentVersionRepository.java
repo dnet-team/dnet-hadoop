@@ -3,7 +3,7 @@ package eu.dnetlib.data.mdstore.manager.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import eu.dnetlib.data.mdstore.manager.model.MDStoreCurrentVersion;
+import eu.dnetlib.data.mdstore.manager.common.model.MDStoreCurrentVersion;
 
 @Repository
 public interface MDStoreCurrentVersionRepository extends JpaRepository<MDStoreCurrentVersion, String> {

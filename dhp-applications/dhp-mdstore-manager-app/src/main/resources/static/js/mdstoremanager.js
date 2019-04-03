@@ -21,7 +21,7 @@ app.controller('mdstoreManagerController', function($scope, $http) {
 		if (dsName || dsId || apiId) {
 			url += '?dsName=' + encodeURIComponent(dsName) + '&dsId=' + encodeURIComponent(dsId) + '&apiId=' + encodeURIComponent(apiId);
 		}
-		$http.put(url).success(function(data) {
+		$http.get(url).success(function(data) {
 			$scope.reload();
 		}).error(function() {
 			alert("error");

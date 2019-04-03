@@ -1,23 +1,21 @@
-package eu.dnetlib.data.mdstore.manager.model;
+package eu.dnetlib.data.mdstore.manager.common.model;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 @Entity
-@Table(name = "mdstores_with_info")
-public class MDStoreWithInfo implements Serializable {
+@Table(name = "mdstores")
+public class MDStore implements Serializable {
 
 	/**
 	 *
 	 */
-	private static final long serialVersionUID = -8445784770687571492L;
+	private static final long serialVersionUID = 3160530489149700055L;
 
 	@Id
 	@Column(name = "id")
@@ -40,19 +38,6 @@ public class MDStoreWithInfo implements Serializable {
 
 	@Column(name = "api_id")
 	private String apiId;
-
-	@Column(name = "current_version")
-	private String currentVersion;
-
-	@Column(name = "lastupdate")
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date lastUpdate;
-
-	@Column(name = "size")
-	private long size = 0;
-
-	@Column(name = "n_versions")
-	private long numberOfVersions = 0;
 
 	public String getId() {
 		return id;
@@ -110,36 +95,25 @@ public class MDStoreWithInfo implements Serializable {
 		this.apiId = apiId;
 	}
 
-	public String getCurrentVersion() {
-		return currentVersion;
+	public static MDStore newInstance(final String format, final String layout, final String interpretation) {
+		return newInstance(format, layout, interpretation, null, null, null);
 	}
 
-	public void setCurrentVersion(final String currentVersion) {
-		this.currentVersion = currentVersion;
-	}
-
-	public Date getLastUpdate() {
-		return lastUpdate;
-	}
-
-	public void setLastUpdate(final Date lastUpdate) {
-		this.lastUpdate = lastUpdate;
-	}
-
-	public long getSize() {
-		return size;
-	}
-
-	public void setSize(final long size) {
-		this.size = size;
-	}
-
-	public long getNumberOfVersions() {
-		return numberOfVersions;
-	}
-
-	public void setNumberOfVersions(final long numberOfVersions) {
-		this.numberOfVersions = numberOfVersions;
+	public static MDStore newInstance(final String format,
+			final String layout,
+			final String interpretation,
+			final String dsName,
+			final String dsId,
+			final String apiId) {
+		final MDStore md = new MDStore();
+		md.setId("md-" + UUID.randomUUID());
+		md.setFormat(format);
+		md.setLayout(layout);
+		md.setInterpretation(interpretation);
+		md.setDatasourceName(dsName);
+		md.setDatasourceId(dsId);
+		md.setApiId(apiId);
+		return md;
 	}
 
 }

@@ -17,12 +17,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.google.common.collect.Lists;
 
+import eu.dnetlib.data.mdstore.manager.common.model.MDStore;
+import eu.dnetlib.data.mdstore.manager.common.model.MDStoreCurrentVersion;
+import eu.dnetlib.data.mdstore.manager.common.model.MDStoreVersion;
+import eu.dnetlib.data.mdstore.manager.common.model.MDStoreWithInfo;
 import eu.dnetlib.data.mdstore.manager.exceptions.MDStoreManagerException;
 import eu.dnetlib.data.mdstore.manager.exceptions.NoContentException;
-import eu.dnetlib.data.mdstore.manager.model.MDStore;
-import eu.dnetlib.data.mdstore.manager.model.MDStoreCurrentVersion;
-import eu.dnetlib.data.mdstore.manager.model.MDStoreVersion;
-import eu.dnetlib.data.mdstore.manager.model.MDStoreWithInfo;
 import eu.dnetlib.data.mdstore.manager.repository.MDStoreCurrentVersionRepository;
 import eu.dnetlib.data.mdstore.manager.repository.MDStoreRepository;
 import eu.dnetlib.data.mdstore.manager.repository.MDStoreVersionRepository;
@@ -72,7 +72,7 @@ public class MDStoreController {
 	}
 
 	@ApiOperation(value = "Create a new mdstore")
-	@RequestMapping(value = "/new/{format}/{layout}/{interpretation}", method = RequestMethod.PUT)
+	@RequestMapping(value = "/new/{format}/{layout}/{interpretation}", method = RequestMethod.GET)
 	public MDStoreWithInfo createMDStore(
 			@ApiParam("mdstore format") @PathVariable final String format,
 			@ApiParam("mdstore layout") @PathVariable final String layout,

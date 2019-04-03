@@ -1,4 +1,4 @@
-package eu.dnetlib.data.mdstore.manager.model;
+package eu.dnetlib.data.mdstore.manager.common.model;
 
 import java.io.Serializable;
 import java.util.Date;
