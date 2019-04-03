@@ -65,6 +65,18 @@ public class MDStoreController {
 		return mdstoreWithInfoRepository.findById(mdId).orElseThrow(() -> new NoContentException("Missing mdstore: " + mdId));
 	}
 
+	@Transactional
+	@ApiOperation(value = "Increase the read count of the current mdstore")
+	@RequestMapping(value = "/mdstore/{mdId}/startReading", method = RequestMethod.GET)
+	public MDStoreVersion startReading(@ApiParam("the mdstore identifier") @PathVariable final String mdId) throws NoContentException {
+		final MDStoreCurrentVersion cv = mdstoreCurrentVersionRepository.findById(mdId).orElseThrow(() -> new NoContentException("Missing mdstore: " + mdId));
+		final MDStoreVersion v = mdstoreVersionRepository.findById(cv.getCurrentVersion())
+				.orElseThrow(() -> new NoContentException("Missing version: " + cv.getCurrentVersion()));
+		v.setReadCount(v.getReadCount() + 1);
+		mdstoreVersionRepository.save(v);
+		return v;
+	}
+
 	@ApiOperation(value = "Return the number of mdstores")
 	@RequestMapping(value = "/count", method = RequestMethod.GET)
 	public long count() {
@@ -163,6 +175,16 @@ public class MDStoreController {
 			@ApiParam("if true, the controls on writing and readcount values will be skipped") @RequestParam(required = false, defaultValue = "false") final boolean force)
 			throws MDStoreManagerException {
 		_deleteVersion(versionId, force);
+	}
+
+	@Transactional
+	@ApiOperation(value = "Decrease the read count of a mdstore version")
+	@RequestMapping(value = "/version/{versionId}/endReading", method = RequestMethod.GET)
+	public MDStoreVersion endReading(@ApiParam("the id of the version that has been completely read") @PathVariable final String versionId)
+			throws MDStoreManagerException {
+		final MDStoreVersion v = mdstoreVersionRepository.findById(versionId).orElseThrow(() -> new MDStoreManagerException("Version not found"));
+		v.setReadCount(v.getReadCount() - 1);
+		return v;
 	}
 
 	@Transactional
