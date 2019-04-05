@@ -57,11 +57,7 @@ public class DnetCollectorWorkerApplication implements CommandLineRunner {
 	public void run(final String... args) throws Exception {
 		if (args.length == 0) { return; }
 		if (args.length != 3) { throw new DnetCollectorException("Invalid number of parameters, expected: hdfs_path and json_api_description"); }
-
 		//TODO : migrate to https://commons.apache.org/proper/commons-cli/usage.html
-
-
-
 
 		final String hdfsPath = args[0];
 
