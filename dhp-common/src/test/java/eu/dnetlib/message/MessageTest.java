@@ -51,33 +51,5 @@ public class MessageTest {
     }
 
 
-    @Test
-    public void sendMessageTest() throws Exception {
 
-        final String expectedJson= "{\"workflowId\":\"wId\",\"jobName\":\"Collection\",\"type\":\"ONGOING\",\"body\":{\"ExecutionTime\":\"30s\",\"parsedItem\":\"300\"}}";
-        Message m = new Message();
-        m.setWorkflowId("wf_20190405_105048_275");
-        m.setType(MessageType.ONGOING);
-        m.setJobName("Collection");
-        Map<String,String> body= new HashMap<>();
-        body.put("progressCount", "100");
-        body.put("ExecutionTime", "30s");
-
-        m.setBody(body);
-
-        MessageManager mm = new MessageManager("broker1-dev-dnet.d4science.org","r_admin", "9g8fed7gpohef9y84th98h", false,false, null);
-
-
-
-
-
-        mm.sendMessage(m, "dev_ongoing");
-
-        m.setType(MessageType.REPORT);
-
-        body.put("mdStoreSize", "368");
-
-
-        mm.sendMessage(m, "dev_report", true, false);
-    }
 }

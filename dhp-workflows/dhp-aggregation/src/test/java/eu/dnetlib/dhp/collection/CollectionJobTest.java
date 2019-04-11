@@ -5,6 +5,7 @@ import eu.dnetlib.dhp.model.mdstore.MetadataRecord;
 import eu.dnetlib.dhp.model.mdstore.Provenance;
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -13,21 +14,11 @@ public class CollectionJobTest {
 
 
     @Test
+    @Ignore
     public void test () throws Exception {
         Provenance provenance = new Provenance("pippo", "puppa", "ns_prefix");
         GenerateNativeStoreSparkJob.main(new String[] {"-e", "XML","-d", ""+System.currentTimeMillis(),"-p", new ObjectMapper().writeValueAsString(provenance), "-x","./*[local-name()='record']/*[local-name()='header']/*[local-name()='identifier']","-i","/home/sandro/Downloads/oai_1","-o","/home/sandro/Downloads/mdstore_result"});
         System.out.println(new ObjectMapper().writeValueAsString(provenance));
-    }
-
-
-    @Test
-    public void transformTest () throws Exception {
-
-        TransformSparkJobNode.main(new String[]{"-o","/home/sandro/Downloads/mdstore_cleande","-i","/home/sandro/Downloads/mdstore_result"});
-
-
-
-
     }
 
 

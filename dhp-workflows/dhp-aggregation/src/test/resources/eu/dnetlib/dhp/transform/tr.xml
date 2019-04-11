@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RESOURCE_PROFILE>
+    <HEADER>
+        <RESOURCE_IDENTIFIER value="d6fa79f2-486e-482d-b37c-62129af2cd9a_VHJhbnNmb3JtYXRpb25SdWxlRFNSZXNvdXJjZXMvVHJhbnNmb3JtYXRpb25SdWxlRFNSZXNvdXJjZVR5cGU="/>
+        <RESOURCE_TYPE value="TransformationRuleDSResourceType"/>
+        <RESOURCE_KIND value="TransformationRuleDSResources"/>
+        <RESOURCE_URI value=""/>
+        <DATE_OF_CREATION value="2019-04-11T11:15:30+00:00"/>
+    </HEADER>
+    <BODY>
+        <CONFIGURATION>
+            <IMPORTED/>
+            <SCRIPT>
+                <TITLE>Dnet Hadoop TR </TITLE>
+                <CODE>
+                    <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+                                    xmlns:oai="http://www.openarchives.org/OAI/2.0/"
+                                    xmlns:oaf="http://namespace.openaire.eu/oaf" version="2.0"
+                                    exclude-result-prefixes="xsl">
+                        <xsl:template match="/">
+                            <oai:record>
+                                <xsl:copy-of select="//oai:header"/>
+                                <xsl:copy-of select="//oai:metadata"/>
+                                <oaf:about>
+                                    <oaf:datainfo>
+                                        <oaf:TestValue>incomplete</oaf:TestValue>
+                                        <oaf:provisionMode>collected</oaf:provisionMode>
+                                    </oaf:datainfo>
+                                </oaf:about>
+                            </oai:record>
+                        </xsl:template>
+                    </xsl:stylesheet>
+                </CODE>
+            </SCRIPT>
+        </CONFIGURATION>
+        <STATUS/>
+        <SECURITY_PARAMETERS>SECURITY_PARAMETERS</SECURITY_PARAMETERS>
+    </BODY>
+</RESOURCE_PROFILE>

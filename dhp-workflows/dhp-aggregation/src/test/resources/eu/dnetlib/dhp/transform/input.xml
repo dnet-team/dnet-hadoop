@@ -1,0 +1,37 @@
+<record xmlns="http://www.openarchives.org/OAI/2.0/">
+    <header>
+        <identifier>oai:research.chalmers.se:243692</identifier>
+        <datestamp>2018-01-25T18:04:43Z</datestamp>
+        <setSpec>openaire</setSpec>
+    </header>
+    <metadata>
+        <oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">
+            <dc:title>Incipient Berezinskii-Kosterlitz-Thouless transition in two-dimensional coplanar Josephson junctions</dc:title>
+            <dc:identifier>https://research.chalmers.se/en/publication/243692</dc:identifier>
+            <dc:date>2016</dc:date>
+            <dc:creator>Massarotti, D.</dc:creator>
+            <dc:creator>Jouault, B.</dc:creator>
+            <dc:creator>Rouco, V.</dc:creator>
+            <dc:creator>Charpentier, Sophie</dc:creator>
+            <dc:creator>Bauch, Thilo</dc:creator>
+            <dc:creator>Michon, A.</dc:creator>
+            <dc:creator>De Candia, A.</dc:creator>
+            <dc:creator>Lucignano, P.</dc:creator>
+            <dc:creator>Lombardi, Floriana</dc:creator>
+            <dc:creator>Tafuri, F.</dc:creator>
+            <dc:creator>Tagliacozzo, A.</dc:creator>
+            <dc:subject>Materials Chemistry</dc:subject>
+            <dc:subject>Geochemistry</dc:subject>
+            <dc:subject>Condensed Matter Physics</dc:subject>
+            <dc:description>Superconducting hybrid junctions are revealing a variety of effects. Some of them are due to the special layout of these devices, which often use a coplanar configuration with relatively large barrier channels and the possibility of hosting Pearl vortices. A Josephson junction with a quasi-ideal two-dimensional barrier has been realized by growing graphene on SiC with Al electrodes. Chemical vapor deposition offers centimeter size monolayer areas where it is possible to realize a comparative analysis of different devices with nominally the same barrier. In samples with a graphene gap below 400 nm, we have found evidence of Josephson coherence in the presence of an incipient Berezinskii-Kosterlitz-Thouless transition. When the magnetic field is cycled, a remarkable hysteretic collapse and revival of the Josephson supercurrent occurs. Similar hysteresis are found in granular systems and are usually justified within the Bean critical state model (CSM). We show that the CSM, with appropriate account for the low-dimensional geometry, can partly explain the odd features measured in these junctions.</dc:description>
+            <dc:relation>info:eu-repo/grantAgreement/EC/FP7/604391//Graphene-Based Revolutions in ICT And Beyond (Graphene Flagship)/</dc:relation>
+            <dc:relation>info:eu-repo/semantics/altIdentifier/doi/10.1103/PhysRevB.94.054525</dc:relation>
+            <dc:type>info:eu-repo/semantics/article</dc:type>
+            <dc:source>Physical Review B vol.94(2016)</dc:source>
+            <dc:rights>info:eu-repo/semantics/openAccess</dc:rights>
+            <dc:language>eng</dc:language>
+            <dc:audience>Researchers</dc:audience>
+            <dc:format>application/pdf</dc:format>
+        </oai_dc:dc>
+    </metadata>
+</record>

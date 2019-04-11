@@ -1,0 +1,76 @@
+<workflow-app name="Transformation_Workflow" xmlns="uri:oozie:workflow:0.5">
+    <parameters>
+        <property>
+            <name>mdstoreInputPath</name>
+            <description>the path of the input MDStore</description>
+        </property>
+
+        <property>
+            <name>mdstoreOutputPath</name>
+            <description>the path of the cleaned mdstore</description>
+        </property>
+
+        <property>
+            <name>transformationRule</name>
+            <description>The transformation Rule to apply</description>
+        </property>
+
+        <property>
+            <name>timestamp</name>
+            <description>The timestamp of the collection date</description>
+        </property>
+
+        <property>
+            <name>workflowId</name>
+            <description>The identifier of the workflow</description>
+        </property>
+    </parameters>
+
+    <start to="DeletePathIfExists"/>
+    <kill name="Kill">
+        <message>Action failed, error message[${wf:errorMessage(wf:lastErrorNode())}]</message>
+    </kill>
+    <action name="DeletePathIfExists">
+        <fs>
+            <mkdir path='${mdstoreOutputPath}'/>
+            <delete path='${mdstoreOutputPath}'/>
+        </fs>
+        <ok to="TransformJob"/>
+        <error to="Kill"/>
+    </action>
+    <action name="TransformJob">
+        <spark xmlns="uri:oozie:spark-action:0.2">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <master>yarn</master>
+            <mode>cluster</mode>
+            <name>MDBuilder</name>
+            <class>eu.dnetlib.dhp.transformation.TransformSparkJobNode</class>
+            <jar>dhp-aggregations-1.0.0-SNAPSHOT.jar</jar>
+            <spark-opts>--num-executors 50 --conf spark.yarn.jars=&quot;hdfs://hadoop-rm1.garr-pa1.d4science.org:8020/user/oozie/share/lib/lib_20180405103059/spark2&quot;</spark-opts>
+            <arg>--dateOfCollection</arg> <arg>${timestamp}</arg>
+            <arg>-mt</arg> <arg>yarn</arg>
+            <arg>--input</arg><arg>${mdstoreInputPath}</arg>
+            <arg>--output</arg><arg>${mdstoreOutputPath}</arg>
+            <arg>-w</arg><arg>${workflowId}</arg>
+            <arg>-tr</arg><arg>${transformationRule}</arg>
+            <arg>-ru</arg><arg>${rmq_user}</arg>
+            <arg>-rp</arg><arg>${rmq_pwd}</arg>
+            <arg>-rh</arg><arg>${rmq_host}</arg>
+            <arg>-ro</arg><arg>${rmq_ongoing}</arg>
+            <arg>-rr</arg><arg>${rmq_report}</arg>
+        </spark>
+        <ok to="End"/>
+        <error to="DropInvalidStore"/>
+    </action>
+
+    <action name="DropInvalidStore">
+        <fs>
+            <delete path='${mdstoreOutputPath}/../'/>
+        </fs>
+        <ok to="Kill"/>
+        <error to="Kill"/>
+    </action>
+
+    <end name="End"/>
+</workflow-app>

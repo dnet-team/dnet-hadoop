@@ -1,4 +1,4 @@
-<workflow-app name="Oozie_Java_Wf" xmlns="uri:oozie:workflow:0.5">
+<workflow-app name="CollectionWorkflow" xmlns="uri:oozie:workflow:0.5">
     <parameters>
         <property>
             <name>sequenceFilePath</name>
@@ -20,7 +20,7 @@
             <description>A json encoding of the Datasource Info</description>
         </property>
         <property>
-            <name>identifierXPath</name>
+            <name>identifierPath</name>
             <description>An xpath to retrieve the metadata idnentifier for the generation of DNet Identifier </description>
         </property>
 
@@ -33,6 +33,11 @@
             <name>timestamp</name>
             <description>The timestamp of the collection date</description>
         </property>
+
+        <property>
+            <name>workflowId</name>
+            <description>The identifier of the workflow</description>
+        </property>
     </parameters>
 
     <start to="DeleteMDStoresNative"/>
@@ -41,33 +46,41 @@
     </kill>
     <action name="DeleteMDStoresNative">
         <fs>
+            <mkdir path='${sequenceFilePath}'/>
+            <mkdir path='${mdStorePath}'/>
             <delete path='${sequenceFilePath}'/>
             <delete path='${mdStorePath}'/>
         </fs>
         <ok to="CollectionWorker"/>
         <error to="Kill"/>
     </action>
-
     <action name="CollectionWorker">
         <shell xmlns="uri:oozie:shell-action:0.1">
             <job-tracker>${jobTracker}</job-tracker>
             <name-node>${nameNode}</name-node>
             <exec>lib/dhp-collector-worker-1.0.0.jar</exec>
-            <argument>${sequenceFilePath}</argument>
-            <argument>${apiDescription}</argument>
-            <argument>${nameNode}</argument>
+            <argument>-p</argument><argument>${sequenceFilePath}</argument>
+            <argument>-a</argument><argument>${apiDescription}</argument>
+            <argument>-n</argument><argument>${nameNode}</argument>
+            <argument>-rh</argument><argument>${rmq_host}</argument>
+            <argument>-ru</argument><argument>${rmq_user}</argument>
+            <argument>-rp</argument><argument>${rmq_pwd}</argument>
+            <argument>-rr</argument><argument>${rmq_report}</argument>
+            <argument>-ro</argument><argument>${rmq_ongoing}</argument>
+            <argument>-u</argument><argument>sandro.labruzzo</argument>
+            <argument>-w</argument><argument>${workflowId}</argument>
             <capture-output/>
         </shell>
-        <ok to="mdBuilder"/>
+        <ok to="GenerateNativeStoreSparkJob"/>
         <error to="Kill"/>
     </action>
-    <action name="mdBuilder">
+    <action name="GenerateNativeStoreSparkJob">
         <spark xmlns="uri:oozie:spark-action:0.2">
             <job-tracker>${jobTracker}</job-tracker>
             <name-node>${nameNode}</name-node>
             <master>yarn</master>
             <mode>cluster</mode>
-            <name>MDBuilder</name>
+            <name>GenerateNativeStoreSparkJob</name>
             <class>eu.dnetlib.dhp.collection.GenerateNativeStoreSparkJob</class>
             <jar>dhp-aggregations-1.0.0-SNAPSHOT.jar</jar>
             <spark-opts>--num-executors 50 --conf spark.yarn.jars=&quot;hdfs://hadoop-rm1.garr-pa1.d4science.org:8020/user/oozie/share/lib/lib_20180405103059/spark2&quot;</spark-opts>
@@ -77,9 +90,24 @@
             <arg>--xpath</arg><arg>${identifierPath}</arg>
             <arg>--input</arg><arg>${sequenceFilePath}</arg>
             <arg>--output</arg><arg>${mdStorePath}</arg>
+            <arg>-rh</arg><arg>${rmq_host}</arg>
+            <arg>-ru</arg><arg>${rmq_user}</arg>
+            <arg>-rp</arg><arg>${rmq_pwd}</arg>
+            <arg>-rr</arg><arg>${rmq_report}</arg>
+            <arg>-ro</arg><arg>${rmq_ongoing}</arg>
+            <arg>-w</arg><arg>${workflowId}</arg>
         </spark>
         <ok to="End"/>
+        <error to="DropInvalidStore"/>
+    </action>
+
+    <action name="DropInvalidStore">
+        <fs>
+            <delete path='${mdStorePath}/../'/>
+        </fs>
+        <ok to="Kill"/>
         <error to="Kill"/>
     </action>
+
     <end name="End"/>
 </workflow-app>

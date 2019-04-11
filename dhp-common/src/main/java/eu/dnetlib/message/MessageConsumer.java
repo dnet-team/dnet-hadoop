@@ -39,6 +39,8 @@ public class MessageConsumer extends DefaultConsumer {
             else {
                 //TODO LOGGING EXCEPTION
             }
+        } finally {
+            getChannel().basicAck(envelope.getDeliveryTag(), false);
         }
     }
 }

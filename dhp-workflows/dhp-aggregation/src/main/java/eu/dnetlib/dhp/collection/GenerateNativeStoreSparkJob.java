@@ -3,6 +3,9 @@ package eu.dnetlib.dhp.collection;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.dnetlib.dhp.model.mdstore.MetadataRecord;
 import eu.dnetlib.dhp.model.mdstore.Provenance;
+import eu.dnetlib.message.Message;
+import eu.dnetlib.message.MessageManager;
+import eu.dnetlib.message.MessageType;
 import org.apache.commons.cli.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.hadoop.io.IntWritable;
@@ -21,6 +24,8 @@ import org.dom4j.io.SAXReader;
 
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 public class GenerateNativeStoreSparkJob {
@@ -52,6 +57,67 @@ public class GenerateNativeStoreSparkJob {
 
     public static void main(String[] args) throws Exception {
 
+        Options options = generateApplicationArguments();
+
+
+        CommandLineParser parser = new DefaultParser();
+        CommandLine cmd = parser.parse( options, args);
+
+        final String encoding               = cmd.getOptionValue("e");
+        final long dateOfCollection         = new Long(cmd.getOptionValue("d"));
+        final String jsonProvenance         = cmd.getOptionValue("p");
+        final ObjectMapper jsonMapper       = new ObjectMapper();
+        final Provenance provenance         = jsonMapper.readValue(jsonProvenance, Provenance.class);
+        final String xpath                  = cmd.getOptionValue("x");
+        final String inputPath              = cmd.getOptionValue("i");
+        final String outputPath             = cmd.getOptionValue("o");
+        final String rabbitUser 			= cmd.getOptionValue("ru");
+        final String rabbitPassword		    = cmd.getOptionValue("rp");
+        final String rabbitHost 			= cmd.getOptionValue("rh");
+        final String rabbitOngoingQueue 	= cmd.getOptionValue("ro");
+        final String rabbitReportQueue  	= cmd.getOptionValue("rr");
+        final String workflowId 			= cmd.getOptionValue("w");
+
+        final SparkSession spark = SparkSession
+                .builder()
+                .appName("GenerateNativeStoreSparkJob")
+                .master("yarn")
+                .getOrCreate();
+
+        final Map<String, String> ongoingMap = new HashMap<>();
+        final Map<String, String> reportMap = new HashMap<>();
+
+        final JavaSparkContext sc = new JavaSparkContext(spark.sparkContext());
+
+        final JavaPairRDD<IntWritable, Text> inputRDD = sc.sequenceFile(inputPath, IntWritable.class, Text.class);
+
+        final LongAccumulator totalItems = sc.sc().longAccumulator("TotalItems");
+
+        final LongAccumulator invalidRecords = sc.sc().longAccumulator("InvalidRecords");
+
+        final MessageManager manager = new MessageManager(rabbitHost, rabbitUser, rabbitPassword, false, false, null);
+
+        final JavaRDD<MetadataRecord> mappeRDD = inputRDD.map(item -> parseRecord(item._2().toString(), xpath, encoding, provenance, dateOfCollection, totalItems, invalidRecords))
+                .filter(Objects::nonNull).distinct();
+
+        ongoingMap.put("ongoing", "0");
+        manager.sendMessage(new Message(workflowId,"DataFrameCreation", MessageType.ONGOING, ongoingMap ), rabbitOngoingQueue, true, false);
+
+        final Encoder<MetadataRecord> encoder = Encoders.bean(MetadataRecord.class);
+        final Dataset<MetadataRecord> mdstore = spark.createDataset(mappeRDD.rdd(), encoder);
+        final LongAccumulator mdStoreRecords = sc.sc().longAccumulator("MDStoreRecords");
+        mdStoreRecords.add(mdstore.count());
+        ongoingMap.put("ongoing", ""+ totalItems.value());
+        manager.sendMessage(new Message(workflowId,"DataFrameCreation", MessageType.ONGOING, ongoingMap ), rabbitOngoingQueue, true, false);
+
+        mdstore.write().format("parquet").save(outputPath);
+        reportMap.put("inputItem" , ""+ totalItems.value());
+        reportMap.put("invalidRecords", "" + invalidRecords.value());
+        reportMap.put("mdStoreSize", "" + mdStoreRecords.value());
+        manager.sendMessage(new Message(workflowId,"Collection", MessageType.REPORT, reportMap ), rabbitReportQueue, true, false);
+    }
+
+    private static Options generateApplicationArguments() {
         Options options = new Options();
         options.addOption(Option.builder("e")
                 .longOpt("encoding")
@@ -93,43 +159,48 @@ public class GenerateNativeStoreSparkJob {
                 .hasArg()
                 .build());
 
+        options.addOption(Option.builder("ru")
+                .longOpt("rabbitUser")
+                .required(true)
+                .desc("the user to connect with RabbitMq for messaging")
+                .hasArg() // This option has an argument.
+                .build());
 
-        CommandLineParser parser = new DefaultParser();
-        CommandLine cmd = parser.parse( options, args);
+        options.addOption(Option.builder("rp")
+                .longOpt("rabbitPassWord")
+                .required(true)
+                .desc("the password to connect with RabbitMq for messaging")
+                .hasArg() // This option has an argument.
+                .build());
 
-        final String encoding = cmd.getOptionValue("e");
-        final long dateOfCollection = new Long(cmd.getOptionValue("d"));
-        final String jsonProvenance = cmd.getOptionValue("p");
-        final ObjectMapper jsonMapper = new ObjectMapper();
-        final Provenance provenance = jsonMapper.readValue(jsonProvenance, Provenance.class);
-        final String xpath = cmd.getOptionValue("x");
-        final String inputPath = cmd.getOptionValue("i");
-        final String outputPath = cmd.getOptionValue("o");
+        options.addOption(Option.builder("rh")
+                .longOpt("rabbitHost")
+                .required(true)
+                .desc("the host of the RabbitMq server")
+                .hasArg() // This option has an argument.
+                .build());
 
-        final SparkSession spark = SparkSession
-                .builder()
-                .appName("GenerateNativeStoreSparkJob")
-                .master("local")
-                .getOrCreate();
+        options.addOption(Option.builder("ro")
+                .longOpt("rabbitOngoingQueue")
+                .required(true)
+                .desc("the name of the ongoing queue")
+                .hasArg() // This option has an argument.
+                .build());
 
-        final JavaSparkContext sc = new JavaSparkContext(spark.sparkContext());
+        options.addOption(Option.builder("rr")
+                .longOpt("rabbitReportQueue")
+                .required(true)
+                .desc("the name of the report queue")
+                .hasArg() // This option has an argument.
+                .build());
 
-        final JavaPairRDD<IntWritable, Text> inputRDD = sc.sequenceFile(inputPath, IntWritable.class, Text.class);
 
-        final LongAccumulator totalItems = sc.sc().longAccumulator("TotalItems");
-
-        final LongAccumulator invalidRecords = sc.sc().longAccumulator("InvalidRecords");
-
-        final JavaRDD<MetadataRecord> mappeRDD = inputRDD.map(item -> parseRecord(item._2().toString(), xpath, encoding, provenance, dateOfCollection, totalItems, invalidRecords))
-                .filter(Objects::nonNull).distinct();
-
-        final Encoder<MetadataRecord> encoder = Encoders.bean(MetadataRecord.class);
-        final Dataset<MetadataRecord> mdstore = spark.createDataset(mappeRDD.rdd(), encoder);
-        final LongAccumulator mdStoreRecords = sc.sc().longAccumulator("MDStoreRecords");
-        mdStoreRecords.add(mdstore.count());
-        System.out.println("totalItems.value() = " + totalItems.value());
-        System.out.println("invalidRecords = " + invalidRecords.value());
-        System.out.println("mdstoreRecords.value() = " + mdStoreRecords.value());
-        mdstore.write().format("parquet").save(outputPath);
+        options.addOption(Option.builder("w")
+                .longOpt("workflowId")
+                .required(true)
+                .desc("the identifier of the dnet Workflow")
+                .hasArg() // This option has an argument.
+                .build());
+        return options;
     }
 }

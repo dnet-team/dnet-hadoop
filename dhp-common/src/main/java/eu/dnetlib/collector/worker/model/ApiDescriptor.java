@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-//TODO sholud be moved on dhp-common
 public class ApiDescriptor {
 
 	private String id;
