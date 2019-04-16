@@ -192,16 +192,18 @@ public class DnetCollectorWorkerApplication implements CommandLineRunner {
 
 		log.info("Created path "+hdfswritepath.toString());
 
+		final Map<String, String> ongoingMap = new HashMap<>();
+		final Map<String, String> reportMap = new HashMap<>();
+		final AtomicInteger counter = new AtomicInteger(0);
 		try(SequenceFile.Writer writer = SequenceFile.createWriter(conf,
 				SequenceFile.Writer.file(hdfswritepath), SequenceFile.Writer.keyClass(IntWritable.class),
 				SequenceFile.Writer.valueClass(Text.class))) {
 
-			final AtomicInteger counter = new AtomicInteger(0);
+
 			final IntWritable key = new IntWritable(counter.get());
 			final Text value = new Text();
 
-			final Map<String, String> ongoingMap = new HashMap<>();
-			final Map<String, String> reportMap = new HashMap<>();
+
 
 			plugin.collect(api).forEach(content -> {
 
@@ -223,12 +225,13 @@ public class DnetCollectorWorkerApplication implements CommandLineRunner {
 				}
 
 			});
-			ongoingMap.put("ongoing", ""+counter.get());
-			manager.sendMessage(new Message(workflowId,"Collection", MessageType.ONGOING, ongoingMap ), rabbitOngoingQueue, true, false);
-			reportMap.put("collected", ""+counter.get());
-			manager.sendMessage(new Message(workflowId,"Collection", MessageType.REPORT, reportMap ), rabbitReportQueue, true, false);
 
 		}
+		ongoingMap.put("ongoing", ""+counter.get());
+		manager.sendMessage(new Message(workflowId,"Collection", MessageType.ONGOING, ongoingMap ), rabbitOngoingQueue, true, false);
+		reportMap.put("collected", ""+counter.get());
+		manager.sendMessage(new Message(workflowId,"Collection", MessageType.REPORT, reportMap ), rabbitReportQueue, true, false);
+		manager.close();
 	}
 
 }

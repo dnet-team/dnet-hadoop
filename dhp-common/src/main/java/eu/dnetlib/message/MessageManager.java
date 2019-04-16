@@ -19,6 +19,9 @@ public class MessageManager {
 
     private final String password;
 
+    private Connection connection;
+
+    private Map<String , Channel> channels = new HashMap<>();
 
     private  boolean durable;
 
@@ -59,9 +62,36 @@ public class MessageManager {
         channel.queueDeclare(queueName, durable, false, this.autodelete, args);
         return channel;
     }
-    public boolean sendMessage(final Message message, String queueName) throws Exception {
-        try (Connection connection = createConnection(); Channel channel = createChannel(connection, queueName, this.durable, this.autodelete)) {
 
+    private Channel getOrCreateChannel(final String queueName, boolean durable, boolean autodelete) throws Exception {
+        if (channels.containsKey(queueName)) {
+            return  channels.get(queueName);
+        }
+
+        if (this.connection == null) {
+            this.connection = createConnection();
+        }
+        channels.put(queueName, createChannel(this.connection, queueName, durable, autodelete));
+        return channels.get(queueName);
+    }
+
+
+
+    public void close() throws IOException {
+        channels.values().forEach(ch-> {
+            try {
+                ch.close();
+            } catch (Exception e) {
+                //TODO LOG
+            }
+        });
+
+        this.connection.close();
+    }
+
+    public boolean sendMessage(final Message message, String queueName) throws Exception {
+        try {
+            Channel channel = getOrCreateChannel(queueName, this.durable, this.autodelete);
             channel.basicPublish("", queueName,null, message.toString().getBytes());
             return true;
         } catch (Throwable e) {
@@ -70,8 +100,8 @@ public class MessageManager {
     }
 
     public boolean sendMessage(final Message message, String queueName, boolean durable_var, boolean autodelete_var) throws Exception {
-        try (Connection connection = createConnection();  Channel channel = createChannel(connection, queueName, durable_var, autodelete_var)) {
-
+        try {
+            Channel channel = getOrCreateChannel(queueName, durable_var, autodelete_var);
             channel.basicPublish("", queueName,null, message.toString().getBytes());
             return true;
         } catch (Throwable e) {

@@ -140,12 +140,19 @@ public class TransformSparkJobNode {
 
 
         if (rabbitHost != null) {
+
+            System.out.println("SEND FINAL REPORT");
+
             final Map<String, String> reportMap = new HashMap<>();
             reportMap.put("inputItem" , ""+ totalItems.value());
             reportMap.put("invalidRecords", "" + errorItems.value());
             reportMap.put("mdStoreSize", "" + transformedItems.value());
             final MessageManager manager = new MessageManager(rabbitHost, rabbitUser, rabbitPassword, false, false, null);
+
+
+            System.out.println(new Message(workflowId, "Transform", MessageType.REPORT, reportMap));
             manager.sendMessage(new Message(workflowId, "Transform", MessageType.REPORT, reportMap), rabbitReportQueue, true, false);
+            manager.close();
         }
 
     }
