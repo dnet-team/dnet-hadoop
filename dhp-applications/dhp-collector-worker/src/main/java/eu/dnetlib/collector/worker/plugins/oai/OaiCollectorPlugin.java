@@ -7,10 +7,6 @@ import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.google.common.base.Splitter;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
@@ -18,10 +14,8 @@ import com.google.common.collect.Lists;
 import eu.dnetlib.collector.worker.DnetCollectorException;
 import eu.dnetlib.collector.worker.model.ApiDescriptor;
 import eu.dnetlib.collector.worker.plugins.CollectorPlugin;
-import eu.dnetlib.collector.worker.utils.DnetWorkerCollector;
 
-@Component
-@DnetWorkerCollector("oai")
+
 public class OaiCollectorPlugin implements CollectorPlugin {
 
 	private static final String FORMAT_PARAM = "format";
@@ -29,7 +23,7 @@ public class OaiCollectorPlugin implements CollectorPlugin {
 	private static final Object OAI_FROM_DATE_PARAM = "fromDate";
 	private static final Object OAI_UNTIL_DATE_PARAM = "untilDate";
 
-	@Autowired
+
 	private OaiIteratorFactory oaiIteratorFactory;
 
 	@Override
@@ -58,9 +52,16 @@ public class OaiCollectorPlugin implements CollectorPlugin {
 		if (untilDate != null && !untilDate.matches("\\d{4}-\\d{2}-\\d{2}")) { throw new DnetCollectorException("Invalid date (YYYY-MM-DD): " + untilDate); }
 
 		final Iterator<Iterator<String>> iters = sets.stream()
-				.map(set -> oaiIteratorFactory.newIterator(baseUrl, mdFormat, set, fromDate, untilDate))
+				.map(set -> getOaiIteratorFactory().newIterator(baseUrl, mdFormat, set, fromDate, untilDate))
 				.iterator();
 
 		return StreamSupport.stream(Spliterators.spliteratorUnknownSize(Iterators.concat(iters), Spliterator.ORDERED), false);
+	}
+
+	public OaiIteratorFactory getOaiIteratorFactory() {
+		if (oaiIteratorFactory == null){
+			oaiIteratorFactory = new OaiIteratorFactory();
+		}
+		return oaiIteratorFactory;
 	}
 }

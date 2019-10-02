@@ -21,11 +21,11 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.stereotype.Component;
+
 
 import eu.dnetlib.collector.worker.DnetCollectorException;
 
-@Component
+
 public class HttpConnector {
 
 	private static final Log log = LogFactory.getLog(HttpConnector.class);
@@ -48,7 +48,7 @@ public class HttpConnector {
 	 * @param requestUrl
 	 *            the URL
 	 * @return the content of the downloaded resource
-	 * @throws CollectorServiceException
+	 * @throws DnetCollectorException
 	 *             when retrying more than maxNumberOfRetry times
 	 */
 	public String getInputSource(final String requestUrl) throws DnetCollectorException {
@@ -61,7 +61,7 @@ public class HttpConnector {
 	 * @param requestUrl
 	 *            the URL
 	 * @return the content of the downloaded resource as InputStream
-	 * @throws CollectorServiceException
+	 * @throws DnetCollectorException
 	 *             when retrying more than maxNumberOfRetry times
 	 */
 	public InputStream getInputSourceAsStream(final String requestUrl) throws DnetCollectorException {
